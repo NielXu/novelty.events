@@ -1,0 +1,35 @@
+{
+  "name": "get-started-webapp",
+  "version": "1.0.0",
+  "description": "This is a get started webapp that created by webapp-quickbuild",
+  "scripts": {
+    "start": "node backend/index.js",
+    "start:debug": "DEBUG=express:* node backend/index.js",
+    "build": "webpack --progress --config frontend/webpack.dev.js",
+    "build:prod": "webpack --progress --config frontend/webpack.prod.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.0.0",
+    "file-loader": "^4.0.0",
+    "prop-types": "^15.7.2",
+    "style-loader": "^0.23.1",
+    "url-loader": "^2.0.1",
+    "webpack": "^4.33.0",
+    "webpack-cli": "^3.3.4",
+    "webpack-merge": "^4.2.1"
+  },
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.1",
+    "express": "^4.17.1",
+    "mongodb": "^3.3.2"
+  }
+}
