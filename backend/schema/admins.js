@@ -1,3 +1,8 @@
+const { default_dbname, get, insert } = require('../database');
+const ObjectID = require('mongodb').ObjectID;
+const uuid4 = require('uuid/v4');
+const logger = require('../log/logger');
+
 module.exports = {
     query: {
         allAdmins: '[Admin]',
@@ -29,49 +34,41 @@ module.exports = {
     `,
     mutationResolver: {
         addAdmin: function(parent, args, context, info) {
-            return {
-                firstname: 'Daniel',
-                lastname: 'Xu',
-                username: 'niellxu',
-                password: '123',
-                email: 'novelty@gamil.com',
-                type: 'SUPER'
-            }
+            let newAdmin = args.input;
+            insert(default_dbname, 'admins', [newAdmin], function(err, result) {
+                if(err) {
+                    logger.error(`Error occurred when inserting ${JSON.stringify(newAdmin)} in database, error: ${err}`);
+                }
+                logger.info(`Added new admin to the database ${JSON.stringify(newAdmin)}`)
+                return newAdmin;
+            });
         },
     },
     queryResolver: {
         getAdmin: (parent, args, context, info) => {
-            console.log(args);
-            return {
-                firstname: 'Daniel',
-                lastname: 'Xu',
-                username: 'niellxu',
-                password: '123',
-                email: 'novelty@gamil.com',
-                type: 'SUPER'
-            }
+            const adminID = args.id;
+            get(default_dbname, 'admins', {_id: ObjectID(adminID)}, function(err, result) {
+                if(err) {
+                    logger.error(`Error occurred when getting admin with ID ${adminID} from database, error: ${err}`);
+                }
+                if(result.length > 1) {
+                    logger.error(`Duplicated ID in database: ${adminID}, # of duplicates: ${result.length}`);
+                }
+                if(result.length === 0) {
+                    return {}
+                }
+                logger.info(`Return result from getAdmin request, ${JSON.stringify(result[0])}`);
+                return result[0];
+            });
         },
-        allAdmins: (parent, args, context, info) => [
-            {
-                id: 'abc123',
-                firstname: 'Daniel',
-                lastname: 'Xu',
-                username: 'niellxu',
-                password: '123',
-                email: 'novelty@gamil.com',
-                phone: '6478888888',
-                type: 'SUPER'
-            },
-            {
-                id: 'uqweaks122',
-                firstname: 'Tester',
-                lastname: 'T',
-                username: 'tt',
-                password: 'as22',
-                email: 'mail@mail.com',
-                phone: '9998888888',
-                type: 'LOW'
-            }
-        ]
+        allAdmins: (parent, args, context, info) => {
+            get(default_dbname, 'admins', {}, function(err, result) {
+                if(err) {
+                    logger.error(`Error occurred when getting all admins from database, error: ${err}`)
+                }
+                logger.info(`Return result from allAdmins request, ${JSON.stringify(result)}`);
+                return result;
+            })
+        }
     }
 }

@@ -22,7 +22,7 @@ function init(callback) {
             logger.info('Successfully connected to mongodb');
             if(process.env.NODE_ENV === 'dev') {
                 logger.info('Deleting old data [dev]');
-                del(default_dbname, 'polls', {}, function(err, result) {
+                del(default_dbname, 'admins', {}, function(err, result) {
                     logger.info(`Deleted size: ${result.result.n} [dev]`);
                     callback();
                 })
