@@ -2,6 +2,9 @@ module.exports = {
     query: {
         allMembers: '[Member]'
     },
+    mutation: {
+
+    },
     typeDef: `
         type Member {
             id: ID
@@ -15,8 +18,11 @@ module.exports = {
             school: String
         }
     `,
-    resolver: {
-        allMembers: () => [
+    mutationResolver: {
+
+    },
+    queryResolver: {
+        allMembers: (parent, args, context, info) => [
             {
                 id: 'abc123',
                 firstname: 'Daniel',

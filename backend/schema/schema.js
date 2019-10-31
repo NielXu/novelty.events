@@ -1,19 +1,58 @@
 const { gql } = require('apollo-server');
 const logger = require('../log/logger');
-const {typeDef: adminType, resolver: adminResolver, query: adminQuery} = require('./admins');
-const {typeDef: memberType, resolver: memberResolver, query: memberQuery} = require('./members');
+// Admins
+const {
+    typeDef: adminType,
+    query: adminQuery,
+    queryResolver: adminResolver,
+    mutation: adminMutation,
+    mutationResolver: adminMutationResolver
+} = require('./admins');
+// Members
+const {typeDef: memberType,
+    query: memberQuery,
+    queryResolver: memberResolver,
+    mutation: memberMutation,
+    mutationResolver: memberMutationResolver
+} = require('./members');
+// Others
+const {typeDef: othersType,
+    query: othersQuery,
+    queryResolver: othersResolver,
+    mutation: othersMutation,
+    mutationResolver: othersMutationResolver
+} = require('./others');
 
 let schema = `
         type Query {
             ${parseQuery(adminQuery)}
             ${parseQuery(memberQuery)}
+            ${parseQuery(othersQuery)}
+        }
+
+        type Mutation {
+            ${parseQuery(adminMutation)}
+            ${parseQuery(memberMutation)}
+            ${parseQuery(othersMutation)}
         }
 `;
-let resolver = {};
+let queryResolver = {}, mutationResolver = {};
 schema += adminType + "\n";
 schema += memberType + "\n";
+schema += othersType + "\n";
 logger.info(`Using GraphQL schema: ${schema}`);
-Object.assign(resolver, adminResolver, memberResolver);
+Object.assign(
+    queryResolver,
+    adminResolver,
+    memberResolver,
+    othersResolver,
+);
+Object.assign(
+    mutationResolver,
+    adminMutationResolver,
+    memberMutationResolver,
+    othersMutationResolver,
+)
 
 function parseQuery(query) {
     let q = "";
@@ -25,5 +64,5 @@ function parseQuery(query) {
 
 module.exports = {
     schema: gql(schema),
-    resolver: {Query: resolver},
+    resolver: {Query: queryResolver, Mutation: mutationResolver},
 }
