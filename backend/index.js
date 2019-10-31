@@ -1,16 +1,10 @@
-const express = require('express');
-const path = require('path');
-const { init } = require('./database');
+const { ApolloServer } = require('apollo-server');
 const logger = require('./log/logger');
-const app = express();
+const { schema: typeDefs, resolver: resolvers } = require('./schema/schema');
 
-app.use(express.static(path.join(__dirname, 'static/')));
+logger.info(`Setting up ApolloServer`);
+const server = new ApolloServer({ typeDefs, resolvers });
 
-app.get('*', (req, res, next) => {
-    res.sendFile(path.join(__dirname, 'static', 'index.html'));
-});
-
-init(function() {
-    logger.info('Starting server listening port 5000');
-    app.listen(5000);
+server.listen().then(({ url }) => {
+    logger.info(`Server ready at ${url}`);
 })
