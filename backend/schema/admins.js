@@ -33,42 +33,31 @@ module.exports = {
         }
     `,
     mutationResolver: {
-        addAdmin: function(parent, args, context, info) {
+        addAdmin: async function(parent, args, context, info) {
             let newAdmin = args.input;
-            insert(default_dbname, 'admins', [newAdmin], function(err, result) {
-                if(err) {
-                    logger.error(`Error occurred when inserting ${JSON.stringify(newAdmin)} in database, error: ${err}`);
-                }
-                logger.info(`Added new admin to the database ${JSON.stringify(newAdmin)}`)
-                return newAdmin;
-            });
+            await insert(default_dbname, 'admins', [newAdmin]);
+            logger.info(`Added new admin to the database ${JSON.stringify(newAdmin)}`)
+            return newAdmin;
         },
     },
     queryResolver: {
-        getAdmin: (parent, args, context, info) => {
+        getAdmin: async function(parent, args, context, info) {
             const adminID = args.id;
-            get(default_dbname, 'admins', {_id: ObjectID(adminID)}, function(err, result) {
-                if(err) {
-                    logger.error(`Error occurred when getting admin with ID ${adminID} from database, error: ${err}`);
-                }
-                if(result.length > 1) {
-                    logger.error(`Duplicated ID in database: ${adminID}, # of duplicates: ${result.length}`);
-                }
-                if(result.length === 0) {
-                    return {}
-                }
-                logger.info(`Return result from getAdmin request, ${JSON.stringify(result[0])}`);
-                return result[0];
-            });
+            const result = await get(default_dbname, 'admins', {_id: ObjectID(adminID)});
+            if(result.length > 1) {
+                logger.error(`Duplicated ID in database: ${adminID}, # of duplicates: ${result.length}`);
+            }
+            if(result.length === 0) {
+                logger.info(`Return result from getAdmin request, null`);
+                return null;
+            }
+            logger.info(`Return result from getAdmin request, ${JSON.stringify(result[0])}`);
+            return result[0];
         },
-        allAdmins: (parent, args, context, info) => {
-            get(default_dbname, 'admins', {}, function(err, result) {
-                if(err) {
-                    logger.error(`Error occurred when getting all admins from database, error: ${err}`)
-                }
-                logger.info(`Return result from allAdmins request, ${JSON.stringify(result)}`);
-                return result;
-            })
+        allAdmins: async function(parent, args, context, info) {
+            const result = await get(default_dbname, 'admins', {});
+            logger.info(`Return result from allAdmins request, ${JSON.stringify(result)}`);
+            return result;
         }
     }
 }

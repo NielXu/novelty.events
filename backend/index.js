@@ -6,8 +6,9 @@ const { schema: typeDefs, resolver: resolvers } = require('./schema/schema');
 logger.info(`Setting up ApolloServer`);
 const server = new ApolloServer({ typeDefs, resolvers });
 
-init(function() {
+(async () => {
+    await init();
     server.listen().then(({ url }) => {
         logger.info(`Server ready at ${url}`);
     })
-})
+})()
