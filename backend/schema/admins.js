@@ -13,7 +13,7 @@ module.exports = {
     },
     typeDef: `
         type Admin {
-            id: ID!
+            _id: ID!
             firstname: String!
             lastname: String!
             username: String!
