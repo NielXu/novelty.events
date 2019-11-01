@@ -49,8 +49,13 @@ module.exports = {
     mutationResolver: {
         addAdmin: async function(parent, args, context, info) {
             let newAdmin = args.input;
+            const existing = await get(default_dbname, 'admins', {username: newAdmin.username});
+            if(existing.length != 0) {
+                logger.info(`Add new admin from addAdmin request rejected because username already exists, username: ${newAdmin.username}`);
+                return null;
+            }
             await insert(default_dbname, 'admins', [newAdmin]);
-            logger.info(`Added new admin, ${JSON.stringify(newAdmin)}`)
+            logger.info(`Added new admin from addAdmin request, admin: ${JSON.stringify(newAdmin)}`)
             return newAdmin;
         },
         updateAdminByID: async function(parent, args, context, info) {
