@@ -12,12 +12,11 @@ async function init() {
     logger.info('Initializing database');
     logger.info(`Attempting to connect: ${URL}`);
     db_instance = await MongoClient.connect(URL, {useUnifiedTopology: true, useNewUrlParser: true});
-    db_instance.db().collection
     logger.info('Successfully connected to mongodb');
     if(process.env.NODE_ENV === 'dev') {
-        logger.info('Deleting old data [dev]');
+        logger.info('[dev] Deleting old data');
         const result = await del(default_dbname, 'admins', {});
-        logger.info(`Deleted size: ${result.result.n} [dev]`);
+        logger.info(`[dev] Deleted size: ${result.result.n}`);
     }
 }
 
@@ -87,7 +86,7 @@ async function insert(db_name, collec_name, docs, uid=true) {
 /**
  * Update the data in the database, all the records that
  * match the query will be updated therefore use this
- * safely. Return the result of updating.
+ * safely. Return the updated document.
  * 
  * @param {String} db_name Name of the database
  * @param {String} collec_name Name of the collection
@@ -97,7 +96,7 @@ async function insert(db_name, collec_name, docs, uid=true) {
 async function update(db_name, collec_name, query, update, callback) {
     const db = db_instance.db(db_name);
     try {
-        return await db.collection(collec_name).updateMany(query, update);
+        return await db.collection(collec_name).findOneAndUpdate(query, update, { returnOriginal: false });
     }
     catch(e) {
         dblogger.error(`Error occurred when updating in database, query: ${JSON.stringify(query)}, error: ${e}`);
