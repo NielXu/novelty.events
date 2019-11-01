@@ -1,5 +1,5 @@
 const { ApolloServer } = require('apollo-server');
-const logger = require('./log/logger');
+const { logger } = require('./log/logger');
 const { init } = require('./database');
 const { schema: typeDefs, resolver: resolvers } = require('./schema/schema');
 

@@ -1,5 +1,5 @@
 const { gql } = require('apollo-server');
-const logger = require('../log/logger');
+const { logger } = require('../log/logger');
 // Admins
 const {
     typeDef: adminType,

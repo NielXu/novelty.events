@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 const uuid4 = require('uuid/v4');
-const logger = require('./log/logger');
+const { logger, dblogger } = require('./log/logger');
 
 HOST = process.env.HOST? process.env.HOST : 'localhost';
 PORT = process.env.PORT? process.env.PORT : '27017';
@@ -36,7 +36,7 @@ async function del(db_name, collec_name, query) {
         return await db.collection(collec_name).deleteMany(query);
     }
     catch(e) {
-        logger.error(`Error occurred when deleting from database, query: ${JSON.stringify(query)}, error: ${e}`);
+        dblogger.error(`Error occurred when deleting from database, query: ${JSON.stringify(query)}, error: ${e}`);
     }
 }
 
@@ -55,7 +55,7 @@ async function get(db_name, collec_name, query) {
         return await db.collection(collec_name).find(query).toArray();
     }
     catch(e) {
-        logger.error(`Error occurred when reading from database, query: ${JSON.stringify(query)}, error: ${e}`);
+        dblogger.error(`Error occurred when reading from database, query: ${JSON.stringify(query)}, error: ${e}`);
     }
 }
 
@@ -80,7 +80,7 @@ async function insert(db_name, collec_name, docs, uid=true) {
         return await db.collection(collec_name).insertMany(docs);
     }
     catch(e) {
-        logger.error(`Error occurred when inserting to database, query: ${JSON.stringify(query)}, error: ${e}`);
+        dblogger.error(`Error occurred when inserting to database, query: ${JSON.stringify(query)}, error: ${e}`);
     }
 }
 
@@ -100,7 +100,7 @@ async function update(db_name, collec_name, query, update, callback) {
         return await db.collection(collec_name).updateMany(query, update);
     }
     catch(e) {
-        logger.error(`Error occurred when updating in database, query: ${JSON.stringify(query)}, error: ${e}`);
+        dblogger.error(`Error occurred when updating in database, query: ${JSON.stringify(query)}, error: ${e}`);
     }
 }
 
