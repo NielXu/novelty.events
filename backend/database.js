@@ -15,8 +15,12 @@ async function init() {
     logger.info('Successfully connected to mongodb');
     if(process.env.NODE_ENV === 'dev') {
         logger.info('[dev] Deleting old data');
-        const result = await del(default_dbname, 'admins', {});
-        logger.info(`[dev] Deleted size: ${result.result.n}`);
+        let delete_n = 0;
+        const m =  await del(default_dbname, 'members', {});
+        delete_n += m.result.n;
+        const a = await del(default_dbname, 'admins', {});
+        delete_n += a.result.n
+        logger.info(`[dev] Deleted size: ${delete_n}`);
     }
 }
 
