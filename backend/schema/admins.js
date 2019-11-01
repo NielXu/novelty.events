@@ -119,7 +119,7 @@ module.exports = {
             const username = args.username;
             const result = await get(default_dbname, 'admins', {username: username});
             if(result.length > 1) {
-                dblogger.error(`Duplicated ID in database: ${adminID}, # of duplicates: ${result.length}`);
+                dblogger.error(`Duplicated usernames in database: ${username}, # of duplicates: ${result.length}`);
             }
             if(result.length === 0) {
                 logger.info(`Return result from getAdminByUsername request, username: ${username}, result: null`);

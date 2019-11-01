@@ -7,6 +7,14 @@ module.exports = {
             NORMAL
             LOW
         }
+
+        enum School {
+            UTSC
+            UTM
+            UTSG
+            Ryerson
+            York
+        }
     `,
     mutationResolver: {},
     queryResolver: {}
