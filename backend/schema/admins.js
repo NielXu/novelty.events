@@ -63,7 +63,7 @@ module.exports = {
             let newData = args.input;
             if(newData) {
                 logger.info(`Updated admin from updateAdminByID request, id: ${adminID}, newData: ${JSON.stringify(newData)}`);
-                const result = await update(default_dbname, 'admins', {_id: ObjectID(adminID)}, {$set: newData}).value;
+                const result = await update(default_dbname, 'admins', {_id: ObjectID(adminID)}, {$set: newData});
                 return result.value;
             }
             logger.info(`Update admin from updateAdminByID request skipped since newData is not provided`);
