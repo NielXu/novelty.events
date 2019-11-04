@@ -1,5 +1,5 @@
 const { logger } = require('../log/logger');
-const { default_dbname, get, insert } = require('../database');
+const { default_dbname, get, insert, update, del } = require('../database');
 const ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
@@ -11,10 +11,14 @@ module.exports = {
     },
     mutation: {
         'addMember(input: MemberInput)': 'Member',
+        'updateMemberByID(id: ID!, input: MemberUpdate)': 'Member',
+        'updateMemberByUsername(username: String!, input: MemberUpdate)': 'Member',
+        'deleteMemberByID(id: ID!)': 'Boolean',
+        'deleteMemberByUsername(username: String!)': 'Boolean',
     },
     typeDef: `
         type Member {
-            id: ID!
+            _id: ID!
             firstname: String!
             lastname: String!
             username: String!
@@ -34,6 +38,16 @@ module.exports = {
             phone: String
             school: School!
         }
+
+        input MemberUpdate {
+            firstname: String
+            lastname: String
+            username: String
+            password: String
+            email: String
+            phone: String
+            school: School
+        }
     `,
     mutationResolver: {
         addMember: async function(parent, args, context, info) {
@@ -47,7 +61,49 @@ module.exports = {
             await insert(default_dbname, 'members', [copy]);
             logger.info(`Added new member from addMember request, member: ${JSON.stringify(copy)}`)
             return copy;
-        }
+        },
+        updateMemberByID: async function(parent, args, context, info) {
+            let memberID = args.id;
+            let newData = args.input;
+            if(newData) {
+                logger.info(`Updated member from updateMemberByID request, id: ${memberID}, newData: ${JSON.stringify(newData)}`);
+                const result = await update(default_dbname, 'members', {_id: ObjectID(memberID)}, {$set: newData});
+                return result.value;
+            }
+            logger.info(`Update member from updateMemberByID request skipped since newData is not provided`);
+            return null;
+        },
+        updateMemberByUsername: async function(parent, args, context, info) {
+            let username = args.username;
+            let newData = args.input;
+            if(newData) {
+                logger.info(`Updated member from updateMemberByUsername request, username: ${username}, newData: ${JSON.stringify(newData)}`);
+                const result =  await update(default_dbname, 'members', {username: username}, {$set: newData});
+                return result.value;
+            }
+            logger.info(`Update member from updateMemberByUsername request skipped since newData is not provided`);
+            return null;
+        },
+        deleteMemberByID: async function(parent, args, context, info) {
+            let memberID = args.id;
+            const result = await del(default_dbname, 'members', {_id: ObjectID(memberID)});
+            if(result.result.n === 0) {
+                logger.info(`Delete member from deleteMemberByID request, id: ${memberID}, result: false`);
+                return false;
+            }
+            logger.info(`Delete member from deleteMemberByID request, id: ${memberID}, result: true`);
+            return true;
+        },
+        deleteMemberByUsername: async function(parent, args, context, info) {
+            let username = args.username;
+            const result = await del(default_dbname, 'members', {username: username});
+            if(result.result.n === 0) {
+                logger.info(`Delete member from deleteMemberByUsername request, username: ${username}, result: false`);
+                return false;
+            }
+            logger.info(`Delete member from deleteMemberByUsername request, username: ${username}, result: true`);
+            return true;
+        },
     },
     queryResolver: {
         allMembers: async function(parent, args, context, info){
