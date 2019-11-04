@@ -1,6 +1,6 @@
 const { default_dbname, get, insert, update, del } = require('../database');
-const ObjectID = require('mongodb').ObjectID;
 const { logger, dblogger } = require('../log/logger');
+const { convertID } = require('./schema');
 
 module.exports = {
     query: {
@@ -62,9 +62,14 @@ module.exports = {
             let adminID = args.id;
             let newData = args.input;
             if(newData) {
-                logger.info(`Updated admin from updateAdminByID request, id: ${adminID}, newData: ${JSON.stringify(newData)}`);
-                const result = await update(default_dbname, 'admins', {_id: ObjectID(adminID)}, {$set: newData});
-                return result.value;
+                const convertion = convertID(adminID);
+                if(convertion.valid) {
+                    logger.info(`Updated admin from updateAdminByID request, id: ${adminID}, newData: ${JSON.stringify(newData)}`);
+                    const result = await update(default_dbname, 'admins', {_id: convertion.id}, {$set: newData});
+                    return result.value;
+                }
+                logger.info(`Update admin from updateAdminByID failed since ID type is not valid, id: ${adminID}`);
+                return null;
             }
             logger.info(`Update admin from updateAdminByID request skipped since newData is not provided`);
             return null;
@@ -82,7 +87,12 @@ module.exports = {
         },
         deleteAdminByID: async function(parent, args, context, info) {
             let adminID = args.id;
-            const result = await del(default_dbname, 'admins', {_id: ObjectID(adminID)});
+            const convertion = convertID(adminID);
+            if(!convertion.valid) {
+                logger.info(`Delete admin from deleteAdminByID request failed since ID type is not valid, id: ${adminID}`)
+                return null;
+            }
+            const result = await del(default_dbname, 'admins', {_id: convertion.id});
             if(result.result.n === 0) {
                 logger.info(`Delete admin from deleteAdminByID request, id: ${adminID}, result: false`);
                 return false;
@@ -104,7 +114,12 @@ module.exports = {
     queryResolver: {
         getAdminByID: async function(parent, args, context, info) {
             const adminID = args.id;
-            const result = await get(default_dbname, 'admins', {_id: ObjectID(adminID)});
+            const convertion = convertID(adminID);
+            if(!convertion.valid) {
+                logger.info(`Get Admin by getAdminByID request failed since ID type is not valid, id: ${adminID}`);
+                return null;
+            }
+            const result = await get(default_dbname, 'admins', {_id: convertion.id});
             if(result.length > 1) {
                 dblogger.error(`Duplicated ID in database: ${adminID}, # of duplicates: ${result.length}`);
             }

@@ -1,5 +1,6 @@
 const { logger } = require('../log/logger');
 const { default_dbname, get, insert, update, del } = require('../database');
+const { convertID } = require('./schema');
 const ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
@@ -65,9 +66,14 @@ module.exports = {
         updateMemberByID: async function(parent, args, context, info) {
             let memberID = args.id;
             let newData = args.input;
+            const convertion = convertID(memberID);
+            if(!convertion.valid) {
+                logger.info(`Update member from updateMemberByID request failed since ID type is not valid, id: ${memberID}`);
+                return null;
+            }
             if(newData) {
                 logger.info(`Updated member from updateMemberByID request, id: ${memberID}, newData: ${JSON.stringify(newData)}`);
-                const result = await update(default_dbname, 'members', {_id: ObjectID(memberID)}, {$set: newData});
+                const result = await update(default_dbname, 'members', {_id: convertion.id}, {$set: newData});
                 return result.value;
             }
             logger.info(`Update member from updateMemberByID request skipped since newData is not provided`);
@@ -86,7 +92,12 @@ module.exports = {
         },
         deleteMemberByID: async function(parent, args, context, info) {
             let memberID = args.id;
-            const result = await del(default_dbname, 'members', {_id: ObjectID(memberID)});
+            const convertion = convertID(memberID);
+            if(!convertion.valid) {
+                logger.info(`Delete member from deleteMemberByID request failed since ID type is not valid, id: ${memberID}`);
+                return null;
+            }
+            const result = await del(default_dbname, 'members', {_id: convertion.id});
             if(result.result.n === 0) {
                 logger.info(`Delete member from deleteMemberByID request, id: ${memberID}, result: false`);
                 return false;
@@ -113,6 +124,11 @@ module.exports = {
         },
         getMemberByID: async function(parent, args, context, info) {
             const memberID = args.id;
+            const convertion = convertID(memberID);
+            if(!convertion.valid) {
+                logger.log(`Get member by getMemberByID request failed since ID type is not valid, id: ${memberID}`);
+                return null;
+            }
             const result = await get(default_dbname, 'members', {_id: ObjectID(memberID)});
             if(result.length > 1) {
                 dblogger.error(`Duplicated ID in database: ${memberID}, # of duplicates: ${result.length}`);
