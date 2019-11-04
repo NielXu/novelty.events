@@ -1,7 +1,6 @@
 const { logger } = require('../log/logger');
 const { default_dbname, get, insert, update, del } = require('../database');
 const { convertID } = require('./schema');
-const ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
     query: {
@@ -129,7 +128,7 @@ module.exports = {
                 logger.log(`Get member by getMemberByID request failed since ID type is not valid, id: ${memberID}`);
                 return null;
             }
-            const result = await get(default_dbname, 'members', {_id: ObjectID(memberID)});
+            const result = await get(default_dbname, 'members', {_id: convertion.id});
             if(result.length > 1) {
                 dblogger.error(`Duplicated ID in database: ${memberID}, # of duplicates: ${result.length}`);
             }
