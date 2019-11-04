@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 const uuid4 = require('uuid/v4');
-const { logger, dblogger } = require('./log/logger');
+const { dblogger } = require('./log/logger');
 
 HOST = process.env.HOST? process.env.HOST : 'localhost';
 PORT = process.env.PORT? process.env.PORT : '27017';
@@ -9,18 +9,18 @@ let db_instance;
 const default_dbname = "novelty";
 
 async function init() {
-    logger.info('Initializing database');
-    logger.info(`Attempting to connect: ${URL}`);
+    dblogger.info('Initializing database');
+    dblogger.info(`Attempting to connect: ${URL}`);
     db_instance = await MongoClient.connect(URL, {useUnifiedTopology: true, useNewUrlParser: true});
-    logger.info('Successfully connected to mongodb');
+    dblogger.info('Successfully connected to mongodb');
     if(process.env.NODE_ENV === 'dev') {
-        logger.info('[dev] Deleting old data');
+        dblogger.info('[dev] Deleting old data');
         let delete_n = 0;
         const m =  await del(default_dbname, 'members', {});
         delete_n += m.result.n;
         const a = await del(default_dbname, 'admins', {});
         delete_n += a.result.n
-        logger.info(`[dev] Deleted size: ${delete_n}`);
+        dblogger.info(`[dev] Deleted size: ${delete_n}`);
     }
 }
 
