@@ -1,6 +1,7 @@
 const { default_dbname, get, insert, update, del } = require('../database');
 const { logger, dblogger } = require('../log/logger');
 const { convertID } = require('./schema');
+const { hashPassword } = require('../security');
 
 module.exports = {
     query: {
