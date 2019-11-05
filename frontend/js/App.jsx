@@ -1,4 +1,5 @@
 import React from 'react';
+import Home from './components/homepage';
 
 export default class App extends React.Component {
     constructor(props) {
@@ -32,7 +33,9 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <h2>Hello World!</h2>
+            <div>
+                <Home/>
+            </div>
         )
     }
 }

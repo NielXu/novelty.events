@@ -12,6 +12,7 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
 (async () => {
     logger.info(`Setting up Express Server`);
     app.use(express.static(path.join(__dirname, 'static/')));
+    app.use('/public', express.static(path.join(__dirname, 'public')));
     app.use(
         '/graphql',
         graphqlHttp({
