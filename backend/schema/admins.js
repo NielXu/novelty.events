@@ -1,7 +1,7 @@
 const { default_dbname, get, insert, update, del } = require('../database');
 const { logger, dblogger } = require('../log/logger');
-const { convertID } = require('./schema');
-const { hashPassword } = require('../security');
+const { convertID } = require('./tools');
+const { copyHashPassword } = require('../security');
 
 module.exports = {
     query: {
@@ -49,7 +49,7 @@ module.exports = {
     `,
     mutationResolver: {
         addAdmin: async function(parent, args, context, info) {
-            let newAdmin = args.input;
+            let newAdmin = copyHashPassword(args.input);
             const existing = await get(default_dbname, 'admins', {username: newAdmin.username});
             if(existing.length != 0) {
                 logger.info(`Add new admin from addAdmin request rejected because username already exists, username: ${newAdmin.username}`);
@@ -61,7 +61,7 @@ module.exports = {
         },
         updateAdminByID: async function(parent, args, context, info) {
             let adminID = args.id;
-            let newData = args.input;
+            let newData = copyHashPassword(args.input);
             if(newData) {
                 const convertion = convertID(adminID);
                 if(convertion.valid) {
@@ -77,7 +77,7 @@ module.exports = {
         },
         updateAdminByUsername: async function(parent, args, context, info) {
             let username = args.username;
-            let newData = args.input;
+            let newData = copyHashPassword(args.input);
             if(newData) {
                 logger.info(`Updated admin from updateAdminByUsername request, username: ${username}, newData: ${JSON.stringify(newData)}`);
                 const result =  await update(default_dbname, 'admins', {username: username}, {$set: newData});

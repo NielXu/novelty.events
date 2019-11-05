@@ -1,6 +1,7 @@
 const { logger } = require('../log/logger');
 const { default_dbname, get, insert, update, del } = require('../database');
-const { convertID } = require('./schema');
+const { convertID } = require('./tools');
+const { copyHashPassword } = require('../security');
 
 module.exports = {
     query: {
@@ -51,7 +52,7 @@ module.exports = {
     `,
     mutationResolver: {
         addMember: async function(parent, args, context, info) {
-            let copy = JSON.parse(JSON.stringify(args.input));
+            let copy = copyHashPassword(args.input);
             copy['join'] = new Date();
             const existing = await get(default_dbname, 'members', {username: copy.username});
             if(existing.length != 0) {
@@ -64,7 +65,7 @@ module.exports = {
         },
         updateMemberByID: async function(parent, args, context, info) {
             let memberID = args.id;
-            let newData = args.input;
+            let newData = copyHashPassword(args.input);
             const convertion = convertID(memberID);
             if(!convertion.valid) {
                 logger.info(`Update member from updateMemberByID request failed since ID type is not valid, id: ${memberID}`);
@@ -80,7 +81,7 @@ module.exports = {
         },
         updateMemberByUsername: async function(parent, args, context, info) {
             let username = args.username;
-            let newData = args.input;
+            let newData = copyHashPassword(args.input);
             if(newData) {
                 logger.info(`Updated member from updateMemberByUsername request, username: ${username}, newData: ${JSON.stringify(newData)}`);
                 const result =  await update(default_dbname, 'members', {username: username}, {$set: newData});
@@ -125,7 +126,7 @@ module.exports = {
             const memberID = args.id;
             const convertion = convertID(memberID);
             if(!convertion.valid) {
-                logger.log(`Get member by getMemberByID request failed since ID type is not valid, id: ${memberID}`);
+                logger.info(`Get member by getMemberByID request failed since ID type is not valid, id: ${memberID}`);
                 return null;
             }
             const result = await get(default_dbname, 'members', {_id: convertion.id});

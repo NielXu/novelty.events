@@ -32,8 +32,16 @@ function hashPassword(pass) {
     return sha256(pass);
 }
 
+function copyHashPassword(origin) {
+    let copy = JSON.parse(JSON.stringify(origin));
+    let password = copy.password;
+    copy['password'] = hashPassword(password);
+    return copy;
+}
+
 module.exports = {
     generateToken: generateToken,
     verifyToken: verifyToken,
     hashPassword: hashPassword,
+    copyHashPassword: copyHashPassword,
 }
