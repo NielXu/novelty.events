@@ -1,8 +1,7 @@
 import React from 'react';
-import { Form, Button, Col } from 'react-bootstrap';
+import { Form, Button, Col, Spinner } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import '../../css/login.css';
-import { throwServerError } from 'apollo-link-http-common';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -13,39 +12,12 @@ export default class Login extends React.Component {
             password: '',
             error: '',
             success: false,
-            loading: true,
+            loading: false,
         }
         this.onLoginOptionClick = this.onLoginOptionClick.bind(this);
         this.onUsernameChange = this.onUsernameChange.bind(this);
         this.onPasswordChange = this.onPasswordChange.bind(this);
         this.onSubmitForm = this.onSubmitForm.bind(this);
-    }
-
-    componentDidMount() {
-        if(localStorage.getItem('X-Auth-Token')) {
-            fetch('/auth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    'X-Auth-Token': localStorage.getItem('X-Auth-Token'),
-                })
-            })
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                if(data.hasOwnProperty('token')) {
-                    this.setState({success: true, asMember: data.type === 'members'});
-                }
-                else {
-                    localStorage.removeItem('X-Auth-Token');
-                }
-                this.setState({loading: false});
-            })
-        }
     }
 
     onLoginOptionClick() {
@@ -62,6 +34,7 @@ export default class Login extends React.Component {
 
     onSubmitForm(e) {
         e.preventDefault();
+        this.setState({loading: true});
         fetch('/auth', {
             method: 'POST',
             headers: {
@@ -90,9 +63,6 @@ export default class Login extends React.Component {
     }
 
     render() {
-        if(this.state.loading) {
-            return <div></div>
-        }
         return (
             <div className="center-content">
                 <h3 className="center-content-title">Novelty Login</h3>
@@ -113,7 +83,17 @@ export default class Login extends React.Component {
                             </Col>
                         </Form.Row>
                     </Form.Group>
-                    <Button variant="primary" type="submit">Submit</Button>
+                    {this.state.loading? (
+                        <Button variant="primary" type="submit" disabled>
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="sr-only">Loading...</span>
+                            </Spinner>
+                        </Button>
+                    ):(
+                        <Button variant="primary" type="submit">
+                            Submit
+                        </Button>
+                    )}
                 </Form>
                 {this.state.error && <p className="error-message">{this.state.error}</p>}
                 {this.state.success && <Redirect push to={this.state.asMember? '/member':'/admin'}></Redirect>}
