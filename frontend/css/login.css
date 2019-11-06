@@ -9,3 +9,8 @@
 .center-content-title {
     margin-bottom: 35px;
 }
+
+.error-message {
+    color: #dc3545;
+    margin-top: 20px;
+}

@@ -5,7 +5,7 @@ const express = require('express');
 const graphqlHttp = require('express-graphql');
 const { logger, dblogger } = require('./log/logger');
 const { init, get, default_dbname } = require('./database');
-const { hashPassword, generateToken } = require('./security');
+const { hashPassword, generateToken, verifyToken } = require('./security');
 const { schema: typeDefs, resolver: resolvers } = require('./schema/schema');
 const app = express();
 const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
@@ -23,9 +23,22 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
         })
     );
     // Handling login request
-    app.post('/login', async (req, res, next) => {
+    app.post('/auth', async (req, res, next) => {
         if(!req.body) {
             return res.status(400).json({message: 'Missing request body'});
+        }
+        else if(req.body.hasOwnProperty('X-Auth-Token')) {
+            const veri = verifyToken(req.body['X-Auth-Token']);
+            if(veri.valid) {
+                return res.json({
+                    message: 'Success',
+                    token: req.body['X-Auth-Token'],
+                    type: veri.decoded.type
+                });
+            }
+            else {
+                return res.json({message: 'Access denied, invalid token'});
+            }
         }
         else if(!req.body.hasOwnProperty('username')) {
             return res.status(400).json({message: 'Missing key {username}'});
@@ -51,7 +64,7 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
         else {
             if(result[0].password === hashPassword(password)) {
                 logger.info(`Attempt to login with username: ${username}, password: ${hashPassword(password)}, type: ${type}, result: success`);
-                return res.json({message: 'Success', token: generateToken(username, type)});
+                return res.json({message: 'Success', token: generateToken(username, type), type: type});
             }
             else {
                 logger.info(`Attempt to login with username: ${username}, password: ${hashPassword(password)}, type: ${type}, result: failed`);

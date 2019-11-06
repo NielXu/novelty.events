@@ -11,28 +11,6 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        // Test
-        fetch('/graphql', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                query: `{
-                            allMembers {
-                                firstname,
-                                lastname
-                            }
-                        }`
-            })
-        })
-        .then(response => {
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-        })
     }
 
     render() {
