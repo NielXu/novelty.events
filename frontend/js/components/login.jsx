@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Col, Spinner } from 'react-bootstrap';
+import { Form, Button, Col, Spinner, Navbar, Nav } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import '../../css/login.css';
 
@@ -64,39 +64,48 @@ export default class Login extends React.Component {
 
     render() {
         return (
-            <div className="center-content">
-                <h3 className="center-content-title">Novelty Login</h3>
-                <Form onSubmit={this.onSubmitForm}>
-                    <Form.Group controlId="formBasicUsername">
-                        <Form.Control type="text" placeholder="Username" onChange={this.onUsernameChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Control type="password" placeholder="Password" onChange={this.onPasswordChange}/>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicCheckbox">
-                        <Form.Row>
-                            <Col>
-                                <Form.Check type="checkbox" label="Member" checked={this.state.asMember} onClick={this.onLoginOptionClick}/>
-                            </Col>
-                            <Col>
-                                <Form.Check type="checkbox" label="Admin" checked={!this.state.asMember} onClick={this.onLoginOptionClick}/>
-                            </Col>
-                        </Form.Row>
-                    </Form.Group>
-                    {this.state.loading? (
-                        <Button variant="primary" type="submit" disabled>
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="sr-only">Loading...</span>
-                            </Spinner>
-                        </Button>
-                    ):(
-                        <Button variant="primary" type="submit">
-                            Submit
-                        </Button>
-                    )}
-                </Form>
-                {this.state.error && <p className="error-message">{this.state.error}</p>}
-                {this.state.success && <Redirect push to={this.state.asMember? '/member':'/admin'}></Redirect>}
+            <div>
+                <Navbar bg="light" expand="lg">
+                    <Navbar.Brand href="/">Novelty-UTSC</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Nav className="mr-auto">
+                        <Nav.Link href="#events">Events</Nav.Link>
+                    </Nav>
+                </Navbar>
+                <div className="center-content">
+                    <h3 className="center-content-title">Novelty Login</h3>
+                    <Form onSubmit={this.onSubmitForm}>
+                        <Form.Group controlId="formBasicUsername">
+                            <Form.Control type="text" placeholder="Username" onChange={this.onUsernameChange}/>
+                        </Form.Group>
+                        <Form.Group controlId="formBasicPassword">
+                            <Form.Control type="password" placeholder="Password" onChange={this.onPasswordChange}/>
+                        </Form.Group>
+                        <Form.Group controlId="formBasicCheckbox">
+                            <Form.Row>
+                                <Col>
+                                    <Form.Check type="checkbox" label="Member" checked={this.state.asMember} onClick={this.onLoginOptionClick}/>
+                                </Col>
+                                <Col>
+                                    <Form.Check type="checkbox" label="Admin" checked={!this.state.asMember} onClick={this.onLoginOptionClick}/>
+                                </Col>
+                            </Form.Row>
+                        </Form.Group>
+                        {this.state.loading? (
+                            <Button variant="primary" type="submit" disabled>
+                                <Spinner animation="border" role="status" size="sm">
+                                    <span className="sr-only">Loading...</span>
+                                </Spinner>
+                            </Button>
+                        ):(
+                            <Button variant="primary" type="submit">
+                                Submit
+                            </Button>
+                        )}
+                    </Form>
+                    {this.state.error && <p className="error-message">{this.state.error}</p>}
+                    {this.state.success && <Redirect push to={this.state.asMember? '/member':'/admin'}></Redirect>}
+                </div>
             </div>
         )
     }
