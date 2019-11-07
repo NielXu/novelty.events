@@ -1,8 +1,7 @@
 import React from 'react';
 import Home from './components/homepage';
-import Admin from './components/admin';
-import Member from './components/member';
 import Login from './components/login';
+import Container from './component.container';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 export default class App extends React.Component {
@@ -19,8 +18,8 @@ export default class App extends React.Component {
                 <Switch>
                     <Route exact path="/" component={Home}></Route>
                     <Route exact path="/login" component={Login}></Route>
-                    <Route exact path="/admin" component={Admin}></Route>
-                    <Route exact path="/member" component={Member}></Route>
+                    <Route exact path="/admin" component={Container}></Route>
+                    <Route exact path="/member" component={Container}></Route>
                 </Switch>
             </Router>
         )
