@@ -2,7 +2,7 @@
 This is a platform for handling events in Novelty UTSC. It contains two parts, members and admins. Members can checkout what and when is the next event, suggest an event or browse the photos of the past events. Admins can add or update members, setting up the upcoming events or upload photos.
 
 # Member features
-- [ ] Login/Logout
+- [x] Login/Logout
 - [ ] Activate (Members must have an Novelty card)
 - [ ] Reminder for the next event (Time, location, theme, etc.)
 - [ ] Browse past events
@@ -11,7 +11,7 @@ This is a platform for handling events in Novelty UTSC. It contains two parts, m
 - [ ] Chat with others?
 
 # Admin features
-- [ ] Login/Logout
+- [x] Login/Logout
 - [ ] Add an new event
 - [ ] Text message/email reminder for the upcoming events
 - [ ] Upload photos to gallary

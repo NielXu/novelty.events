@@ -1,6 +1,8 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Navbar, Nav, Image } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
+import AdminSidebar from './admin.sidebar';
+import Sidebar from 'react-sidebar';
 
 export default class Admin extends React.Component {
     constructor(props) {
@@ -10,8 +12,11 @@ export default class Admin extends React.Component {
             unAuth: false,
             type: '',
             loading: true,
+            sidebarOpen: false,
+            sidebarDocked: false,
         }
         this.onLogoutClick = this.onLogoutClick.bind(this);
+        this.onSetSidebar = this.onSetSidebar.bind(this);
     }
 
     componentDidMount() {
@@ -51,6 +56,13 @@ export default class Admin extends React.Component {
         localStorage.removeItem('X-Auth-Token');
     }
 
+    onSetSidebar() {
+        this.setState({
+            sidebarOpen: !this.state.sidebarOpen,
+            sidebarDocked: !this.state.sidebarDocked,
+        });
+    }
+
     render() {
         if(this.state.loading) {
             return <h4>Loading...</h4>
@@ -66,12 +78,33 @@ export default class Admin extends React.Component {
             )
         }
         return (
+            <Sidebar
+                sidebar={<AdminSidebar/>}
+                open={this.state.sidebarOpen}
+                onSetOpen={this.onSetSidebarOpen}
+                docked={this.state.sidebarDocked}
+                styles={{ sidebar: { background: "white" } }}
+            >
             <div>
+                <Navbar bg="light" expand="lg">
+                    <Nav className="mr-auto">
+                        <Button variant="outline-dark" onClick={this.onSetSidebar}>
+                            <Image src="https://img.icons8.com/material-sharp/24/000000/menu.png"/>
+                        </Button>
+                    </Nav>
+                    <Navbar.Collapse className="justify-content-end">
+                        <Navbar.Text style={{"margin-right": "20px"}}>
+                            Signed in as admin
+                        </Navbar.Text>
+                        <Button variant="outline-dark" style={{"margin-right": "20px"}}>Profile</Button>
+                        <Button variant="outline-dark" onClick={this.onLogoutClick}>Logout</Button>
+                    </Navbar.Collapse>
+                </Navbar>
                 <h2>Admin</h2>
-                <Button variant="primary" onClick={this.onLogoutClick}>Logout</Button>
                 {this.state.logout && <Redirect to="/"/>}
                 {this.state.unAuth && <Redirect to="/login"/>}
             </div>
+          </Sidebar>
         )
     }
 }
