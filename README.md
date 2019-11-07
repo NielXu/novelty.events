@@ -19,16 +19,32 @@ This is a platform for handling events in Novelty UTSC. It contains two parts, m
 - [ ] Chat with others?
 
 # Dev
-This project mainly using Express as the backend and React as the frontend. It uses the GraphQL library as the API controller, which is fast and handy. First setup the local database for development
+This project mainly using Express as the backend and React as the frontend. It uses the GraphQL library as the API controller, which is fast and handy. First download the necessary packages:
+
+```sh
+npm install
+```
+
+Then setup the local database for development. The data will be cleared everytime you restart the server, it will make development easier.
+
 ```sh
 ./startdb.sh
 ```
-Then start the server:
+
+And start the server:
+
 ```sh
 npm start
 ```
-And now you can go to the [GraphiQL](localhost:4000/graphql) to start testing the API using GraphQL.
-To insert a member for testing:
+
+To stop the database container:
+
+```sh
+docker stop webapp_database
+```
+
+Now you can go to the [GraphiQL](http://localhost:4000/graphql) to start testing the API using GraphQL.
+
 ```
 mutation {
   addMember(input: {
@@ -44,7 +60,9 @@ mutation {
   }
 }
 ```
+
 To insert an admin for testing
+
 ```
 mutation {
   addAdmin(input: {
@@ -59,3 +77,5 @@ mutation {
   }
 }
 ```
+
+For more information about the GraphQL schema, checkout `backend/schema`
