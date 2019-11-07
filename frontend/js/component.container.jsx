@@ -6,6 +6,7 @@ import MemberComponent from './components/member';
 import Sidebar from './components/sidebar';
 import AdminSidebar from './components/admin.sidebar';
 import MemberSidebar from './components/member.sidebar';
+import MembersListComponent from './components/admin.membersList';
 
 export default class Container extends React.Component {
     constructor(props) {
@@ -76,15 +77,16 @@ export default class Container extends React.Component {
                         </Button>
                     </Nav>
                     <Navbar.Collapse className="justify-content-end">
-                        <Navbar.Text style={{"margin-right": "20px"}}>
+                        <Navbar.Text style={{"marginRight": "20px"}}>
                             Signed in as {this.state.type}
                         </Navbar.Text>
-                        <Button variant="outline-dark" style={{"margin-right": "20px"}}>Profile</Button>
+                        <Button variant="outline-dark" style={{"marginRight": "20px"}}>Profile</Button>
                         <Button variant="outline-dark" onClick={this.onLogoutClick}>Logout</Button>
                     </Navbar.Collapse>
                 </Navbar>
                 <Route exact path="/admin" render={() => <AdminComponent type={this.state.type}/>}></Route>
                 <Route exact path="/member" render={() => <MemberComponent type={this.state.type}/>}></Route>
+                <Route exact path="/memberList" render={() => <MembersListComponent type={this.state.type}/>}></Route>
             </div>
         )
     }

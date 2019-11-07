@@ -1,15 +1,9 @@
 import React from 'react';
-import { Button, Navbar, Nav, Image } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
-import AdminSidebar from './admin.sidebar';
-import Sidebar from 'react-sidebar';
 
 export default class Admin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            logout: false,
-            unAuth: false,
             type: this.props.type,
             loading: false,
         }

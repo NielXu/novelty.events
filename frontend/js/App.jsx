@@ -20,6 +20,7 @@ export default class App extends React.Component {
                     <Route exact path="/login" component={Login}></Route>
                     <Route exact path="/admin" component={Container}></Route>
                     <Route exact path="/member" component={Container}></Route>
+                    <Route exact path="/memberList" component={Container}></Route>
                 </Switch>
             </Router>
         )

@@ -1,14 +1,9 @@
 import React from 'react';
-import { Button, Nav, Navbar, Image } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
-import MemberSidebar from './member.sidebar';
-import Sidebar from 'react-sidebar';
 
 export default class Member extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            logout: false,
             type: this.props.type,
             loading: false,
         }
