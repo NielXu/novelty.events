@@ -1,4 +1,9 @@
 import React from 'react';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
+import ReactTable from 'react-bootstrap-table-next';
+import { Dropdown, Button } from 'react-bootstrap';
+import filterFactory, { textFilter, selectFilter } from 'react-bootstrap-table2-filter';
 
 export default class MemberList extends React.Component {
     constructor(props) {
@@ -7,6 +12,52 @@ export default class MemberList extends React.Component {
             loading: true,
             type: this.props.type,
             data: [],
+            columns: [
+                {
+                    dataField: 'firstname',
+                    text: 'Firstname',
+                    filter: textFilter()
+                },
+                {
+                    dataField: 'lastname',
+                    text: 'Lastname',
+                    filter: textFilter()
+                },
+                {
+                    dataField: 'username',
+                    text: 'Username',
+                    filter: textFilter()
+                },
+                {
+                    dataField: 'email',
+                    text: 'Email',
+                    filter: textFilter()
+                },
+                {
+                    dataField: 'school',
+                    text: 'School',
+                    filter: textFilter()
+                },
+                {
+                    dataField: '_id',
+                    text: 'Action',
+                    formatter: (cell, row, rowIndex, extra) => {
+                        return (
+                            <Dropdown>
+                                <Dropdown.Toggle variant="info" id="dropdown-basic">
+                                    More
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item href="#/action-1" value={row._id}>Update</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2" value={row._id}>Contact</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item href="#/action-3" value={row._id}>Delete</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        )
+                    }
+                }
+            ]
         }
     }
 
@@ -21,6 +72,7 @@ export default class MemberList extends React.Component {
             body: JSON.stringify({
                 query: `{
                     allMembers {
+                        _id,
                         firstname,
                         lastname,
                         username,
@@ -70,7 +122,13 @@ export default class MemberList extends React.Component {
         return (
             <div>
                 <h2>Members</h2>
-                {this.renderMemberList()}
+                <ReactTable
+                    bootstrap4
+                    keyField='_id'
+                    data={this.state.data.allMembers}
+                    columns={this.state.columns}
+                    filter={filterFactory()}
+                />
             </div>
         )
     }
