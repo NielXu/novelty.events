@@ -7,6 +7,8 @@ import Sidebar from './components/sidebar';
 import AdminSidebar from './components/admin.sidebar';
 import MemberSidebar from './components/member.sidebar';
 import MembersListComponent from './components/admin.membersList';
+import AdminEvents from './components/admin.events';
+import AdminSuggestions from './components/admin.suggestions';
 
 export default class Container extends React.Component {
     constructor(props) {
@@ -87,6 +89,8 @@ export default class Container extends React.Component {
                 <Route exact path="/admin" render={() => <AdminComponent type={this.state.type}/>}></Route>
                 <Route exact path="/member" render={() => <MemberComponent type={this.state.type}/>}></Route>
                 <Route exact path="/memberList" render={() => <MembersListComponent type={this.state.type}/>}></Route>
+                <Route exact path="/adminEvents" render={() => <AdminEvents type={this.state.type}/>}></Route>
+                <Route exact path="/adminSuggestions" render={() => <AdminSuggestions type={this.state.type}/>}></Route>
             </div>
         )
     }

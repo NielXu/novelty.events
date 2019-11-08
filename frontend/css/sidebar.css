@@ -1,0 +1,20 @@
+.home-sidebar {
+    width: 150px;
+    height: 100%;
+    text-align: center;
+}
+
+.sidebar-item {
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+.sidebar-item-text {
+    font-size: 12px;
+    color: grey;
+}
+
+.sidebar-icon {
+    width: 32px;
+    height: 32px;
+}
