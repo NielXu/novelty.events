@@ -72,6 +72,18 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
             }
         }
     });
+    app.post('/activate', async(req, res, next) => {
+        if(!req.body) {
+            return res.status(400).json({message: 'Missing request body'});
+        }
+        else if(!req.body.hasOwnProperty('number')) {
+            return res.status(400).json({message: 'Missing key {number}'});
+        }
+        const number = req.body.number;
+        // Skipped card number verification here...
+        logger.info(`Activated member with card number: ${number}`);
+        return res.json({message: 'Success'});
+    })
     // Catch all and return html page
     app.get('*', (req, res, next) => {
         res.sendFile(path.join(__dirname, 'static', 'index.html'));

@@ -13,15 +13,18 @@ export default class Login extends React.Component {
             error: '',
             success: false,
             loading: false,
+            toActivate: false,
         }
         this.onLoginOptionClick = this.onLoginOptionClick.bind(this);
         this.onUsernameChange = this.onUsernameChange.bind(this);
         this.onPasswordChange = this.onPasswordChange.bind(this);
         this.onSubmitForm = this.onSubmitForm.bind(this);
+        this.onSubmitActivationForm = this.onSubmitActivationForm.bind(this);
+        this.onMemberNumberChange = this.onMemberNumberChange.bind(this);
     }
 
     onLoginOptionClick() {
-        this.setState({asMember: !this.state.asMember});
+        this.setState({asMember: !this.state.asMember, error: ''});
     }
 
     onUsernameChange(e) {
@@ -30,6 +33,10 @@ export default class Login extends React.Component {
 
     onPasswordChange(e) {
         this.setState({password: e.target.value});
+    }
+
+    onMemberNumberChange(e) {
+        this.setState({memberNumber: e.target.value});
     }
 
     onSubmitForm(e) {
@@ -103,8 +110,14 @@ export default class Login extends React.Component {
                             </Button>
                         )}
                     </Form>
+                    {this.state.asMember && (
+                        <div className="login-prompt">
+                            <Button variant="link" onClick={()=>this.setState({toActivate: true})}>New member? Activate here</Button>
+                        </div>
+                    )}
                     {this.state.error && <p className="error-message">{this.state.error}</p>}
-                    {this.state.success && <Redirect push to={this.state.asMember? '/member':'/admin'}></Redirect>}
+                    {this.state.success && <Redirect push to={this.state.asMember? '/member':'/admin'}/>}
+                    {this.state.toActivate && <Redirect push to="/register"/>}
                 </div>
             </div>
         )

@@ -20,6 +20,7 @@ module.exports = {
     typeDef: `
         type Member {
             _id: ID!
+            number: String!
             firstname: String!
             lastname: String!
             username: String!
@@ -31,6 +32,7 @@ module.exports = {
         }
 
         input MemberInput {
+            number: String!
             firstname: String!
             lastname: String!
             username: String!
