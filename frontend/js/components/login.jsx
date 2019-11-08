@@ -19,8 +19,6 @@ export default class Login extends React.Component {
         this.onUsernameChange = this.onUsernameChange.bind(this);
         this.onPasswordChange = this.onPasswordChange.bind(this);
         this.onSubmitForm = this.onSubmitForm.bind(this);
-        this.onSubmitActivationForm = this.onSubmitActivationForm.bind(this);
-        this.onMemberNumberChange = this.onMemberNumberChange.bind(this);
     }
 
     onLoginOptionClick() {
@@ -33,10 +31,6 @@ export default class Login extends React.Component {
 
     onPasswordChange(e) {
         this.setState({password: e.target.value});
-    }
-
-    onMemberNumberChange(e) {
-        this.setState({memberNumber: e.target.value});
     }
 
     onSubmitForm(e) {
