@@ -25,6 +25,12 @@ This project mainly using Express as the backend and React as the frontend. It u
 npm install
 ```
 
+Build the frontend using webpack:
+
+```sh
+npm run build
+```
+
 Then setup the local database for development. The data will be cleared everytime you restart the server, it will make development easier.
 
 ```sh
