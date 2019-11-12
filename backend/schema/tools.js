@@ -17,5 +17,24 @@ module.exports = {
         catch(e) {
             return {valid: false};
         }
-    }
+    },
+
+    constructPayload: function(status, code, data, affected, message) {
+        let resp = {
+            status: status,
+            code: code,
+        }
+        if(data) {
+            resp['data'] = data;
+        }
+        if(message) {
+            resp['message'] = message;
+        }
+        if(affected) {
+            resp['affected'] = affected;
+        }
+        return resp;
+    },
+
+    _: undefined,
 }

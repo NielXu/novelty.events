@@ -1,21 +1,21 @@
 const { logger } = require('../log/logger');
 const { default_dbname, get, insert, update, del } = require('../database');
-const { convertID } = require('./tools');
+const { convertID, _, constructPayload } = require('./tools');
 const { copyHashPassword } = require('../security');
 
 module.exports = {
     query: {
-        allMembers: '[Member]',
-        'getMemberByID(id: ID!)': 'Member',
-        'getMemberByUsername(username: String!)': 'Member',
-        'getMembersBySchool(school: School!)': '[Member]',
+        allMembers: 'MemberPayload',
+        'getMemberByID(id: ID!)': 'MemberPayload',
+        'getMemberByUsername(username: String!)': 'MemberPayload',
+        'getMembersBySchool(school: School!)': 'MemberPayload',
     },
     mutation: {
-        'addMember(input: MemberInput)': 'Member',
-        'updateMemberByID(id: ID!, input: MemberUpdate)': 'Member',
-        'updateMemberByUsername(username: String!, input: MemberUpdate)': 'Member',
-        'deleteMemberByID(id: ID!)': 'Boolean',
-        'deleteMemberByUsername(username: String!)': 'Boolean',
+        'addMember(input: MemberInput)': 'MemberPayload',
+        'updateMemberByID(id: ID!, input: MemberUpdate)': 'MemberPayload',
+        'updateMemberByUsername(username: String!, input: MemberUpdate)': 'MemberPayload',
+        'deleteMemberByID(id: ID!)': 'MemberPayload',
+        'deleteMemberByUsername(username: String!)': 'MemberPayload',
     },
     typeDef: `
         type Member {
@@ -29,6 +29,14 @@ module.exports = {
             email: String!
             phone: String
             school: School!
+        }
+
+        type MemberPayload {
+            status: String!
+            code: Int!
+            message: String
+            data: [Member]
+            affected: Int
         }
 
         input MemberInput {
@@ -59,11 +67,11 @@ module.exports = {
             const existing = await get(default_dbname, 'members', {username: copy.username});
             if(existing.length != 0) {
                 logger.info(`Add new member from addMember request rejected because username already exists, username: ${copy.username}`);
-                return null;
+                return constructPayload('Failed', -1, _, _, "Username already exists");
             }
             await insert(default_dbname, 'members', [copy]);
             logger.info(`Added new member from addMember request, member: ${JSON.stringify(copy)}`)
-            return copy;
+            return constructPayload('Success', 0, [copy]);
         },
         updateMemberByID: async function(parent, args, context, info) {
             let memberID = args.id;
@@ -71,15 +79,15 @@ module.exports = {
             const convertion = convertID(memberID);
             if(!convertion.valid) {
                 logger.info(`Update member from updateMemberByID request failed since ID type is not valid, id: ${memberID}`);
-                return null;
+                return constructPayload('Failed', -1, _, _, "Invalid ID type");
             }
             if(newData) {
                 logger.info(`Updated member from updateMemberByID request, id: ${memberID}, newData: ${JSON.stringify(newData)}`);
                 const result = await update(default_dbname, 'members', {_id: convertion.id}, {$set: newData});
-                return result.value;
+                return constructPayload('Success', 0, [result.value]);
             }
             logger.info(`Update member from updateMemberByID request skipped since newData is not provided`);
-            return null;
+            return constructPayload('Failed', -1, _, _, "No new data provided");
         },
         updateMemberByUsername: async function(parent, args, context, info) {
             let username = args.username;
@@ -87,79 +95,81 @@ module.exports = {
             if(newData) {
                 logger.info(`Updated member from updateMemberByUsername request, username: ${username}, newData: ${JSON.stringify(newData)}`);
                 const result =  await update(default_dbname, 'members', {username: username}, {$set: newData});
-                return result.value;
+                return constructPayload('Success', 0, [result.value]);
             }
             logger.info(`Update member from updateMemberByUsername request skipped since newData is not provided`);
-            return null;
+            return constructPayload('Failed', -1, _, _, "No new data provided");
         },
         deleteMemberByID: async function(parent, args, context, info) {
             let memberID = args.id;
             const convertion = convertID(memberID);
             if(!convertion.valid) {
                 logger.info(`Delete member from deleteMemberByID request failed since ID type is not valid, id: ${memberID}`);
-                return null;
+                return constructPayload('Failed', -1, _, _, "Invalid ID type");
             }
             const result = await del(default_dbname, 'members', {_id: convertion.id});
             if(result.result.n === 0) {
                 logger.info(`Delete member from deleteMemberByID request, id: ${memberID}, result: false`);
-                return false;
+                return constructPayload('Success', 0, _, 0, "No data matched was deleted");
             }
             logger.info(`Delete member from deleteMemberByID request, id: ${memberID}, result: true`);
-            return true;
+            return constructPayload('Success', 0, _, result.result.n);
         },
         deleteMemberByUsername: async function(parent, args, context, info) {
             let username = args.username;
             const result = await del(default_dbname, 'members', {username: username});
             if(result.result.n === 0) {
                 logger.info(`Delete member from deleteMemberByUsername request, username: ${username}, result: false`);
-                return false;
+                return constructPayload('Success', 0, _, 0, "No data matched was deleted");
             }
             logger.info(`Delete member from deleteMemberByUsername request, username: ${username}, result: true`);
-            return true;
+            return constructPayload('Success', 0, _, result.result.n);
         },
     },
     queryResolver: {
         allMembers: async function(parent, args, context, info){
             const result = await get(default_dbname, 'members', {});
             logger.info(`Return result from allMembers request, ${JSON.stringify(result)}`);
-            return result;
+            return constructPayload('Success', 0, result, _);
         },
         getMemberByID: async function(parent, args, context, info) {
             const memberID = args.id;
             const convertion = convertID(memberID);
             if(!convertion.valid) {
                 logger.info(`Get member by getMemberByID request failed since ID type is not valid, id: ${memberID}`);
-                return null;
+                return constructPayload('Failed', -1, _, _, "Invalid ID type");
             }
             const result = await get(default_dbname, 'members', {_id: convertion.id});
             if(result.length > 1) {
                 dblogger.error(`Duplicated ID in database: ${memberID}, # of duplicates: ${result.length}`);
+                return constructPayload('Failed', -1, _, _, "Internal error");
             }
             if(result.length === 0) {
                 logger.info(`Return result from getMemberByID request, ID: ${memberID}, result: null`);
-                return null;
+                return constructPayload('Success', 0, []);
             }
             logger.info(`Return result from getMemberByID request, ID:${memberID}, result: ${JSON.stringify(result[0])}`);
-            return result[0];
+            return constructPayload('Success', 0, result);
         },
         getMemberByUsername: async function(parent, args, context, info) {
             const username = args.username;
             const result = await get(default_dbname, 'members', {username: username});
             if(result.length > 1) {
                 dblogger.error(`Duplicated usernames in database: ${username}, # of duplicates: ${result.length}`);
+                return constructPayload('Failed', -1, _, _, "Internal error");
             }
             if(result.length === 0) {
                 logger.info(`Return result from getMemberByUsername request, username: ${username}, result: null`);
-                return null;
+                return constructPayload('Success', 0, []);
             }
             logger.info(`Return result from getMemberByUsername request, username:${username}, result: ${JSON.stringify(result[0])}`);
-            return result[0];
+            return constructPayload('Success', 0, result);
         },
         getMembersBySchool: async function(parent, args, context, info) {
             const school = args.school;
             const result = await get(default_dbname, 'members', {school: school});
             logger.info(`Return result from getMembersBySchool request, result: ${JSON.stringify(result)}, size: ${result.length}`);
-            return result;
+            return constructPayload('Success', 0, result);
         }
     }
 }
