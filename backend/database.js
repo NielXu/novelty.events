@@ -20,6 +20,8 @@ async function init() {
         delete_n += m.result.n;
         const a = await del(default_dbname, 'admins', {});
         delete_n += a.result.n
+        const c = await del(default_dbname, 'cards', {});
+        delete_n += c.result.n;
         dblogger.info(`[dev] Deleted size: ${delete_n}`);
     }
 }

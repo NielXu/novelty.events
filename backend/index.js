@@ -72,7 +72,7 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
             }
         }
     });
-    app.post('/activate', async(req, res, next) => {
+    app.post('/verify', async(req, res, next) => {
         if(!req.body) {
             return res.status(400).json({message: 'Missing request body'});
         }
@@ -80,8 +80,16 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
             return res.status(400).json({message: 'Missing key {number}'});
         }
         const number = req.body.number;
-        // Skipped card number verification here...
-        logger.info(`Activated member with card number: ${number}`);
+        const result = await get(default_dbname, 'cards', {number: number});
+        if(result.length === 0) {
+            logger.info(`Verifying card failed since it does not exists, number: ${number}`);
+            return res.json({message: 'Cannot find card with given number'});
+        }
+        if(result[0].activate) {
+            logger.info(`Verifying card failed since it has been activated, number: ${number}`);
+            return res.json({message: 'Card has been activated'});
+        }
+        logger.info(`Verifying card success, number: ${number}`);
         return res.json({message: 'Success'});
     })
     // Catch all and return html page
