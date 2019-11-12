@@ -21,10 +21,10 @@ export default class HomePage extends React.Component {
             <div>
                 <Navbar bg="light" expand="lg">
                     <Navbar.Brand href="/">Novelty-UTSC</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav className="mr-auto">
                         <Nav.Link href="#events">Events</Nav.Link>
                     </Nav>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
                         <Button variant="outline-dark" onClick={this.onLoginClick}>Login</Button>
                     </Navbar.Collapse>

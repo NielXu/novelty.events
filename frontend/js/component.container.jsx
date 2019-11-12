@@ -78,6 +78,7 @@ export default class Container extends React.Component {
                             <Image src="https://img.icons8.com/material-sharp/24/000000/menu.png"/>
                         </Button>
                     </Nav>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
                         <Navbar.Text style={{"marginRight": "20px"}}>
                             Signed in as {this.state.type}

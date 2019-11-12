@@ -72,12 +72,15 @@ export default class MemberList extends React.Component {
             body: JSON.stringify({
                 query: `{
                     allMembers {
-                        _id,
-                        firstname,
-                        lastname,
-                        username,
-                        email,
-                        school
+                        code,
+                        data{
+                            _id,
+                            firstname,
+                            lastname,
+                            username,
+                            email,
+                            school
+                        }
                     }
                 }`
             })
@@ -85,14 +88,17 @@ export default class MemberList extends React.Component {
         .then(response => {
             return response.json();
         })
-        .then(data => {
-            this.setState({loading: false, data: data.data});
+        .then(response => {
+            const resp = response.data.allMembers;
+            if(resp.code === 0) {
+                this.setState({loading: false, data: resp.data});
+            }
         })
     }
 
     renderMemberList() {
         let elements = [];
-        const members = this.state.data.allMembers;
+        const members = this.state.data;
         for(var i=0;i<members.length;i++) {
             elements.push(
                 <div key={members[i].username}>
@@ -125,7 +131,7 @@ export default class MemberList extends React.Component {
                 <ReactTable
                     bootstrap4
                     keyField='_id'
-                    data={this.state.data.allMembers}
+                    data={this.state.data}
                     columns={this.state.columns}
                     filter={filterFactory()}
                 />

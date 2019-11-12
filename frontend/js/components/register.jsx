@@ -152,8 +152,9 @@ export default class RegisterComponent extends React.Component {
                         school: ${this.state.school},
                         phone: ${this.state.phone? "\""+this.state.phone+"\"" : null}
                     }) {
-                        username,
-                        password
+                        status,
+                        message,
+                        code
                     }
                 }
                 `
@@ -162,8 +163,11 @@ export default class RegisterComponent extends React.Component {
         .then(response => {
             return response.json();
         })
-        .then(data => {
-            console.log(data);
+        .then(response => {
+            const resp = response.data.addMember;
+            if(resp.code === 0) {
+                console.log('SUCCESS');
+            }
         })
     }
 
@@ -218,10 +222,10 @@ export default class RegisterComponent extends React.Component {
             <div>
                 <Navbar bg="light" expand="lg">
                     <Navbar.Brand href="/">Novelty-UTSC</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav className="mr-auto">
                         <Nav.Link href="#events">Events</Nav.Link>
                     </Nav>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
                         <Button variant="outline-dark" onClick={()=>this.setState({toLogin: true})}>Login</Button>
                     </Navbar.Collapse>

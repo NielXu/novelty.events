@@ -68,7 +68,6 @@ export default class Login extends React.Component {
             <div>
                 <Navbar bg="light" expand="lg">
                     <Navbar.Brand href="/">Novelty-UTSC</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav className="mr-auto">
                         <Nav.Link href="#events">Events</Nav.Link>
                     </Nav>
