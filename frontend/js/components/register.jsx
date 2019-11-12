@@ -20,6 +20,7 @@ export default class RegisterComponent extends React.Component {
             password: '',
             rePassword: '',
             school: 'default',
+            toHome: false,
         }
         this.onSubmitActivationForm = this.onSubmitActivationForm.bind(this);
         this.onNumberChange = this.onNumberChange.bind(this);
@@ -68,7 +69,7 @@ export default class RegisterComponent extends React.Component {
     onSubmitActivationForm(e) {
         e.preventDefault();
         this.setState({loading: true});
-        fetch('/activate', {
+        fetch('/verify', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -166,7 +167,60 @@ export default class RegisterComponent extends React.Component {
         .then(response => {
             const resp = response.data.addMember;
             if(resp.code === 0) {
-                console.log('SUCCESS');
+                fetch('/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                        mutation {
+                            activateCardByNumber(number: "${this.state.number}", username: "${this.state.username}") {
+                                status,
+                                code,
+                                message,
+                            }
+                        }
+                        `
+                    })
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(response => {
+                    console.log(response);
+                    const resp = response.data.activateCardByNumber;
+                    if(resp.code === 0) {
+                        fetch('/auth', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                username: this.state.username,
+                                password: this.state.password,
+                                type: 'members',
+                            })
+                        })
+                        .then(response => {
+                            return response.json();
+                        })
+                        .then(response => {
+                            if(response.hasOwnProperty('token')) {
+                                localStorage.setItem('X-Auth-Token', response.token);
+                                this.setState({toHome: true});
+                            }
+                        })
+                    }
+                    else {
+                        this.setState({error: resp.message})
+                    }
+                })
+            }
+            else {
+                this.setState({error: resp.message});
             }
         })
     }
@@ -283,6 +337,7 @@ export default class RegisterComponent extends React.Component {
                     {this.state.error && <p className="error-message">{this.state.error}</p>}
                 </div>
                 {this.state.toLogin && <Redirect push to="/login"/>}
+                {this.state.toHome && <Redirect to="/member"/>}
             </div>
         )
     }
