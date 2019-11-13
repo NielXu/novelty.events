@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { Nav, Navbar, Button, Image } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
 import AdminComponent from './components/admin';
 import MemberComponent from './components/member';
 import Sidebar from './components/sidebar';
@@ -111,6 +112,7 @@ export default class Container extends React.Component {
                     component={this.mainComponent()}
                     sideComponent={this.state.type === 'admins'? <AdminSidebar/>:<MemberSidebar/>}
                 />
+                <ToastContainer/>
                 {this.state.logout && <Redirect to="/"/>}
             </div>
         )

@@ -4,6 +4,7 @@ import Login from './components/login';
 import Register from './components/register';
 import Container from './component.container';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default class App extends React.Component {
     constructor(props) {

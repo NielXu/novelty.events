@@ -44,6 +44,7 @@
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.1.2",
     "react-sidebar": "^3.0.2",
+    "react-toastify": "^5.4.1",
     "sha256": "^0.2.0",
     "uuid": "^3.3.3",
     "winston": "^3.2.1"
