@@ -87,7 +87,7 @@ export default class Container extends React.Component {
                 <Navbar bg="light" expand="lg">
                     <Nav className="mr-auto">
                         <Button variant="outline-dark" onClick={this.onMenuClick}>
-                            <Image src="https://img.icons8.com/material-sharp/24/000000/menu.png"/>
+                            <Image src={"public/menuIcon.png"} style={{width: "30px"}}/>
                         </Button>
                     </Nav>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
