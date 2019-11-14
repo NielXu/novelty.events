@@ -189,7 +189,6 @@ export default class RegisterComponent extends React.Component {
                     return response.json();
                 })
                 .then(response => {
-                    console.log(response);
                     const resp = response.data.activateCardByNumber;
                     if(resp.code === 0) {
                         fetch('/auth', {

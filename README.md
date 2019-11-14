@@ -3,7 +3,7 @@ This is a platform for handling events in Novelty UTSC. It contains two parts, m
 
 # Member features
 - [x] Login/Logout
-- [ ] Activate (Members must have an Novelty card)
+- [x] Activate (Members must have an Novelty card)
 - [ ] Reminder for the next event (Time, location, theme, etc.)
 - [ ] Browse past events
 - [ ] Suggest an event
@@ -12,6 +12,7 @@ This is a platform for handling events in Novelty UTSC. It contains two parts, m
 
 # Admin features
 - [x] Login/Logout
+- [x] Add new member card
 - [ ] Add an new event
 - [ ] Text message/email reminder for the upcoming events
 - [ ] Upload photos to gallary

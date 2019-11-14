@@ -60,6 +60,7 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
         else if(result.length > 1) {
             logger.info(`Attempt to login with username: ${username}, password: ${hashPassword(password)}, type: ${type}, result: failed`);
             dblogger.error(`Duplicated username occurred in database, username: ${username}`);
+            return res.status(500).json({message: 'Server side error'});
         }
         else {
             if(result[0].password === hashPassword(password)) {

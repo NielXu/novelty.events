@@ -1,13 +1,14 @@
 const { default_dbname, get, insert, update, del } = require('../database');
 const { logger, dblogger } = require('../log/logger');
 const { convertID, _, constructPayload } = require('./tools');
-const { copyHashPassword } = require('../security');
+const { copyHashPassword, verifyToken } = require('../security');
 
 module.exports = {
     query: {
         allAdmins: 'AdminPayload',
         'getAdminByID(id: ID!)': 'AdminPayload',
         'getAdminByUsername(username: String!)': 'AdminPayload',
+        'getAdminByToken(token: String!)': 'AdminPayload',
     },
     mutation: {
         'addAdmin(input: AdminInput)': 'AdminPayload',
@@ -121,6 +122,23 @@ module.exports = {
         }
     },
     queryResolver: {
+        getAdminByToken: async function(parent, args, context, info) {
+            const token = args.token;
+            const verification = verifyToken(token);
+            if(verification.valid) {
+                if(verification.decoded.type !== 'admins') {
+                    logger.info(`Failed to return admin in getAdminByToken request, given token is not admins type`);
+                    return constructPayload('Failed', -1, _, _, "Given token is not admins type");
+                }
+                const result = await get(default_dbname, 'admins', {username: verification.decoded.username});
+                logger.info(`Return admin from getAdminByToken request, username: ${verification.decoded.username}`);
+                return constructPayload('Success', 0, result);
+            }
+            else {
+                logger.info(`Failed to return admin from getAdminByToken request, given token is invalid`);
+                return constructPayload('Failed', -1, _, _, "Invalid token");
+            }
+        },
         getAdminByID: async function(parent, args, context, info) {
             const adminID = args.id;
             const convertion = convertID(adminID);

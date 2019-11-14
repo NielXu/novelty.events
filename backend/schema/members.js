@@ -1,7 +1,7 @@
 const { logger } = require('../log/logger');
 const { default_dbname, get, insert, update, del } = require('../database');
 const { convertID, _, constructPayload } = require('./tools');
-const { copyHashPassword } = require('../security');
+const { copyHashPassword, verifyToken } = require('../security');
 
 module.exports = {
     query: {
@@ -9,6 +9,7 @@ module.exports = {
         'getMemberByID(id: ID!)': 'MemberPayload',
         'getMemberByUsername(username: String!)': 'MemberPayload',
         'getMembersBySchool(school: School!)': 'MemberPayload',
+        'getMemberByToken(token: String!)': 'MemberPayload',
     },
     mutation: {
         'addMember(input: MemberInput)': 'MemberPayload',
@@ -127,6 +128,23 @@ module.exports = {
         },
     },
     queryResolver: {
+        getMemberByToken: async function(parent, args, context, info) {
+            const token = args.token;
+            const verification = verifyToken(token);
+            if(verification.valid) {
+                if(verification.decoded.type !== 'members') {
+                    logger.info(`Failed to return member in getMemberByToken request, given token is not members type`);
+                    return constructPayload('Failed', -1, _, _, "Given token is not members type");
+                }
+                const result = await get(default_dbname, 'members', {username: verification.decoded.username});
+                logger.info(`Return member from getMemberByToken request, username: ${verification.decoded.username}`);
+                return constructPayload('Success', 0, result);
+            }
+            else {
+                logger.info(`Failed to return member from getMemberByToken request, given token is invalid`);
+                return constructPayload('Failed', -1, _, _, "Invalid token");
+            }
+        },
         allMembers: async function(parent, args, context, info){
             const result = await get(default_dbname, 'members', {});
             logger.info(`Return result from allMembers request, ${JSON.stringify(result)}`);

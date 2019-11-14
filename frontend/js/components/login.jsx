@@ -81,7 +81,7 @@ export default class Login extends React.Component {
                         <Form.Group controlId="formBasicPassword">
                             <Form.Control type="password" placeholder="Password" onChange={this.onPasswordChange}/>
                         </Form.Group>
-                        <Form.Group controlId="formBasicCheckbox">
+                        <Form.Group>
                             <Form.Row>
                                 <Col>
                                     <Form.Check type="checkbox" label="Member" checked={this.state.asMember} onClick={this.onLoginOptionClick}/>

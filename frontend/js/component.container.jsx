@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, useHistory } from 'react-router-dom';
 import { Nav, Navbar, Button, Image } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 import AdminComponent from './components/admin';
@@ -10,6 +10,7 @@ import MemberSidebar from './components/member.sidebar';
 import MembersListComponent from './components/admin.membersList';
 import AdminEvents from './components/admin.events';
 import AdminSuggestions from './components/admin.suggestions';
+import AdminProfile from './components/admin.profile';
 
 export default class Container extends React.Component {
     constructor(props) {
@@ -20,10 +21,11 @@ export default class Container extends React.Component {
             logout: false,
             type: '',
             sidebarOpen: false,
-            sidebarDocked: false
+            sidebarDocked: false,
         }
         this.onLogoutClick = this.onLogoutClick.bind(this);
         this.onMenuClick = this.onMenuClick.bind(this);
+        this.onProfileClick = this.onProfileClick.bind(this);
     }
 
     componentDidMount() {
@@ -70,6 +72,15 @@ export default class Container extends React.Component {
         })
     }
 
+    onProfileClick() {
+        if(this.state.type === 'admins') {
+            this.props.history.push('/adminProfile');
+        }
+        else {
+            this.props.history.push('/memberProfile');
+        }
+    }
+
     mainComponent() {
         return (
             <div>
@@ -84,7 +95,7 @@ export default class Container extends React.Component {
                         <Navbar.Text style={{"marginRight": "20px"}}>
                             Signed in as {this.state.type}
                         </Navbar.Text>
-                        <Button variant="outline-dark" style={{"marginRight": "20px"}}>Profile</Button>
+                        <Button variant="outline-dark" style={{"marginRight": "20px"}} onClick={this.onProfileClick}>Profile</Button>
                         <Button variant="outline-dark" onClick={this.onLogoutClick}>Logout</Button>
                     </Navbar.Collapse>
                 </Navbar>
@@ -93,6 +104,7 @@ export default class Container extends React.Component {
                 <Route exact path="/memberList" render={() => <MembersListComponent type={this.state.type}/>}></Route>
                 <Route exact path="/adminEvents" render={() => <AdminEvents type={this.state.type}/>}></Route>
                 <Route exact path="/adminSuggestions" render={() => <AdminSuggestions type={this.state.type}/>}></Route>
+                <Route exact path="/adminProfile" render={() => <AdminProfile type={this.state.type}/>}></Route>
             </div>
         )
     }
