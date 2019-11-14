@@ -1,19 +1,11 @@
 import React from 'react';
 import { Button, Image, Nav, Navbar } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
 import '../../css/homepage.css';
 
 export default class HomePage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            login: false,
-        }
-        this.onLoginClick = this.onLoginClick.bind(this);
-    }
-
-    onLoginClick() {
-        this.setState({login: true});
+        this.state = {}
     }
 
     render() {
@@ -26,13 +18,12 @@ export default class HomePage extends React.Component {
                     </Nav>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
-                        <Button variant="outline-dark" onClick={this.onLoginClick}>Login</Button>
+                        <Button variant="outline-dark" onClick={()=>this.props.history.push('/login')}>Login</Button>
                     </Navbar.Collapse>
                 </Navbar>
                 <div id="homeLogoContainer">
                     <Image src={"/public/homeLogo.png"} id="homeLogo"/>
                 </div>
-                {this.state.login && <Redirect push to="/login"/>}
             </div>
         )
     }

@@ -13,7 +13,6 @@ export default class Login extends React.Component {
             error: '',
             success: false,
             loading: false,
-            toActivate: false,
         }
         this.onLoginOptionClick = this.onLoginOptionClick.bind(this);
         this.onUsernameChange = this.onUsernameChange.bind(this);
@@ -105,12 +104,11 @@ export default class Login extends React.Component {
                     </Form>
                     {this.state.asMember && (
                         <div className="login-prompt">
-                            <Button variant="link" onClick={()=>this.setState({toActivate: true})}>New member? Activate here</Button>
+                            <Button variant="link" onClick={()=>this.props.history.push('/register')}>New member? Activate here</Button>
                         </div>
                     )}
                     {this.state.error && <p className="error-message">{this.state.error}</p>}
                     {this.state.success && <Redirect push to={this.state.asMember? '/member':'/admin'}/>}
-                    {this.state.toActivate && <Redirect push to="/register"/>}
                 </div>
             </div>
         )
