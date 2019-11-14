@@ -2,9 +2,10 @@ import React from 'react';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import ReactTable from 'react-bootstrap-table-next';
-import { Dropdown, Button, Modal, InputGroup, FormControl } from 'react-bootstrap';
+import { Dropdown, Button, Modal, InputGroup, FormControl, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import filterFactory, { textFilter, selectFilter } from 'react-bootstrap-table2-filter';
 import { toast, Slide } from 'react-toastify';
+import '../../css/memberlist.css';
 
 export default class MemberList extends React.Component {
     constructor(props) {
@@ -170,15 +171,17 @@ export default class MemberList extends React.Component {
         .then(response => {
             const resp = response.data.addCard;
             if(resp.code === 0) {
-                toast.info(`✅Successfully added card: ${this.state.number}`, {
+                toast(`✅Successfully added card: ${this.state.number}`, {
                     autoClose: 3000,
                     transition: Slide,
+                    hideProgressBar: true,
                 });
             }
             else {
-                toast.info(`❌Error happened when adding card: ${resp.message}`, {
+                toast(`❌Error happened when adding card: ${resp.message}`, {
                     autoClose: 3000,
                     transition: Slide,
+                    hideProgressBar: true,
                 });
             }
             this.setState({
@@ -219,8 +222,19 @@ export default class MemberList extends React.Component {
         }
         return (
             <div>
-                <h2>Members</h2>
-                <Button variant="outline-primary" onClick={()=>this.setState({showAddCardModal: true})}>Add Card</Button>
+                <div id="memberlist-upper-buttons">
+                    <OverlayTrigger
+                        placement={"left"}
+                        overlay={
+                            <Tooltip>
+                                🚧Under construction
+                            </Tooltip>
+                        }
+                    >
+                        <Button variant="outline-dark">Add Member</Button>
+                    </OverlayTrigger>
+                    <Button variant="outline-dark" onClick={()=>this.setState({showAddCardModal: true})} style={{marginLeft: '25px'}}>Add Card</Button>
+                </div>
                 <Modal show={this.state.showAddCardModal} onHide={()=>this.setState({showAddCardModal: false, number: ""})}>
                     <Modal.Header closeButton>
                         <Modal.Title>New Member Card</Modal.Title>
