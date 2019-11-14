@@ -15,6 +15,13 @@ module.exports = {
             Ryerson
             York
         }
+
+        enum EventLevel {
+            adminOnly
+            memberOnly
+            adminAndMember
+            unlimitied
+        }
     `,
     mutationResolver: {},
     queryResolver: {}
