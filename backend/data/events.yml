@@ -1,0 +1,40 @@
+- date: "20191129"
+  time: "11:50"
+  title: "Fun event for everyone, and for free!"
+  level: "unlimited"
+  public: true
+  chiefs:
+    - admin
+  place: "UTSC"
+  cost: 0.0
+
+- date: "20200101"
+  time: "00:00"
+  title: "New year event"
+  level: "adminOnly"
+  public: false
+  chiefs:
+    - admin
+  place: "Niagara Falls"
+  adminHelpers:
+    - novelty
+  cost: 44.5
+  collaborate:
+    - CSSA
+  description: "New year event for Novelty admin only, collaborating with CSSA club"
+  size: 200
+
+- date: "20190915"
+  time: "9:00"
+  title: "Oday event"
+  level: "memberOnly"
+  public: false
+  chiefs:
+    - novelty
+  place: "UTSC"
+  adminHelpers:
+    - admin
+  memberHelpers:
+    - ditian
+  size: 100
+  cost: 10.0
