@@ -7,6 +7,7 @@ const { logger, dblogger } = require('./log/logger');
 const { init, get, default_dbname } = require('./database');
 const { hashPassword, generateToken, verifyToken } = require('./security');
 const { schema: typeDefs, resolver: resolvers } = require('./schema/schema');
+const { mock } = require('./mocker');
 const app = express();
 const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
 
@@ -98,6 +99,7 @@ const schema = makeExecutableSchema({typeDefs: typeDefs, resolvers: resolvers});
         res.sendFile(path.join(__dirname, 'static', 'index.html'));
     });
     await init();
+    await mock();
     app.listen(4000);
     logger.info(`Server ready at port 4000`);
 })()

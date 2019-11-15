@@ -1,0 +1,13 @@
+- number: "x123"
+  activate: true
+  username: "qwer"
+
+- number: "x1999"
+  activate: true
+  username: "ditian"
+
+- number: "x888"
+  activate: false
+
+- number: "z111"
+  activate: false

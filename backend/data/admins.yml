@@ -1,0 +1,11 @@
+- firstname: Daniel
+  lastname: Xu
+  username: admin
+  password: admin
+  email: "123@mail.com"
+
+- firstname: Foo
+  lastname: Bar
+  username: novelty
+  password: "123"
+  email: "foo@bar.ca"

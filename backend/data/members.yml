@@ -1,0 +1,17 @@
+- firstname: "Somebody"
+  lastname: "X"
+  username: "qwer"
+  password: "123"
+  email: "somebody@gmail.com"
+  school: UTSC
+  number: "x123"
+  join: "20191115"
+
+- firstname: "Dt"
+  lastname: "Zhu"
+  username: "ditian"
+  password: "zhu"
+  email: "non@nonmail.com"
+  school: Ryerson
+  number: "x1999"
+  join: "20191111"

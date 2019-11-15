@@ -13,6 +13,9 @@ async function init() {
     dblogger.info(`Attempting to connect: ${URL}`);
     db_instance = await MongoClient.connect(URL, {useUnifiedTopology: true, useNewUrlParser: true});
     dblogger.info('Successfully connected to mongodb');
+}
+
+async function deleteDev() {
     if(process.env.NODE_ENV === 'dev') {
         dblogger.info('[dev] Deleting old data');
         let delete_n = 0;
@@ -25,6 +28,9 @@ async function init() {
         const e = await del(default_dbname, 'events', {});
         delete_n += e.result.n;
         dblogger.info(`[dev] Deleted size: ${delete_n}`);
+    }
+    else {
+        dblogger.error(`[dev] Deleting data can only be exuected in dev environment`);
     }
 }
 
@@ -118,4 +124,5 @@ module.exports = {
     insert: insert,
     del: del,
     update: update,
+    deleteDev: deleteDev,
 }
