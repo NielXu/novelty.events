@@ -1,6 +1,6 @@
 const { logger } = require('../log/logger');
 const { default_dbname, get, insert, update, del } = require('../database');
-const { convertID, _, constructPayload } = require('./tools');
+const { _, constructPayload } = require('./tools');
 
 function copyInput(input) {
     return JSON.parse(JSON.stringify(input));
@@ -9,21 +9,14 @@ function copyInput(input) {
 async function updateChiefs(chiefs) {
     let admins = [];
     for(var i=0;i<chiefs.length;i++) {
-        const id = chiefs[i];
-        let conversion = convertID(id);
-        if(conversion.valid) {
-            const result = await get(default_dbname, 'admins', {_id: conversion.id});
-            if(result.length === 0) {
-                logger.info(`Failed to create event, admin ID not found: ${id}`);
-                return {valid: false, result: constructPayload('Failed', -1, _, _, `Admin not found with ID: ${id}`)};
-            }
-            else {
-                admins.push(result[0]);
-            }
+        const username = chiefs[i];
+        const result = await get(default_dbname, 'admins', {username: username});
+        if(result.length === 0) {
+            logger.info(`Failed to create event, admin with username not found: ${username}`);
+            return {valid: false, result: constructPayload('Failed', -1, _, _, `Admin not found with username: ${username}`)};
         }
         else {
-            logger.info(`Failed to create event, invalid admin ID: ${id}`);
-            return {valid: false, result: constructPayload('Failed', -1, _, _, `Invalid ID type: ${id}`)};
+            admins.push(result[0]);
         }
     }
     return {valid: true, result: admins};
@@ -32,21 +25,14 @@ async function updateChiefs(chiefs) {
 async function updateMemberHelper(memberHelpers) {
     let members = [];
     for(var i=0;i<memberHelpers.length;i++) {
-        const id = memberHelpers[i];
-        let conversion = convertID(id);
-        if(conversion.valid) {
-            const result = await get(default_dbname, 'members', {_id: conversion.id});
-            if(result.length === 0) {
-                logger.info(`Failed to create event, member helper ID not found: ${id}`);
-                return {valid: false, result: constructPayload('Failed', -1, _, _, `Member helper not found with ID: ${id}`)};
-            }
-            else {
-                members.push(result[0]);
-            }
+        const username = memberHelpers[i];
+        const result = await get(default_dbname, 'members', {username: username});
+        if(result.length === 0) {
+            logger.info(`Failed to create event, member helper with username not found: ${username}`);
+            return {valid: false, result: constructPayload('Failed', -1, _, _, `Member helper not found with username: ${username}`)};
         }
         else {
-            logger.info(`Failed to create event, invalid member helper ID: ${id}`);
-            return {valid: false, result: constructPayload('Failed', -1, _, _, `Invalid ID type: ${id}`)};
+            members.push(result[0]);
         }
     }
     return {valid: true, result: members};
@@ -55,21 +41,14 @@ async function updateMemberHelper(memberHelpers) {
 async function updateAdminHelper(adminHelpers) {
     let admins = [];
     for(var i=0;i<adminHelpers.length;i++) {
-        const id = adminHelpers[i];
-        let conversion = convertID(id);
-        if(conversion.valid) {
-            const result = await get(default_dbname, 'admins', {_id: conversion.id});
-            if(result.length === 0) {
-                logger.info(`Failed to create event, admin helper ID not found: ${id}`);
-                return {valid: false, result: constructPayload('Failed', -1, _, _, `Admin helper not found with ID: ${id}`)};
-            }
-            else {
-                admins.push(result[0]);
-            }
+        const username = adminHelpers[i];
+        const result = await get(default_dbname, 'admins', {username: username});
+        if(result.length === 0) {
+            logger.info(`Failed to create event, admin helper with username not found: ${username}`);
+            return {valid: false, result: constructPayload('Failed', -1, _, _, `Admin helper not found with username: ${username}`)};
         }
         else {
-            logger.info(`Failed to create event, invalid admin helper ID: ${id}`);
-            return {valid: false, result: constructPayload('Failed', -1, _, _, `Invalid ID type: ${id}`)};
+            admins.push(result[0]);
         }
     }
     return {valid: true, result: admins};
@@ -121,12 +100,12 @@ module.exports = {
             title: String!
             level: EventLevel!
             public: Boolean!
-            chiefs: [ID!]!
+            chiefs: [String!]!
             place: String!
             cost: Float!
             description: String
-            adminHelpers: [ID]
-            memberHelpers: [ID]
+            adminHelpers: [String]
+            memberHelpers: [String]
             size: Int
             collaborate: [String]
         }
@@ -137,12 +116,12 @@ module.exports = {
             title: String
             level: EventLevel
             public: Boolean
-            chiefs: [ID]
+            chiefs: [String]
             place: String
             cost: Float
             description: String
-            adminHelpers: [ID]
-            memberHelpers: [ID]
+            adminHelpers: [String]
+            memberHelpers: [String]
             size: Int
             collaborate: [String]
         }
