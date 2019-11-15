@@ -22,6 +22,8 @@ async function init() {
         delete_n += a.result.n
         const c = await del(default_dbname, 'cards', {});
         delete_n += c.result.n;
+        const e = await del(default_dbname, 'events', {});
+        delete_n += e.result.n;
         dblogger.info(`[dev] Deleted size: ${delete_n}`);
     }
 }

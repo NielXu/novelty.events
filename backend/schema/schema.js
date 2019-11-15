@@ -25,6 +25,14 @@ const {
     mutation: cardMutation,
     mutationResolver: cardMutationResolver,
 } = require('./cards');
+// Events
+const {
+    typeDef: eventType,
+    query: eventQuery,
+    queryResolver: eventResolver,
+    mutation: eventMutation,
+    mutationResolver: eventMutationResolver,
+} = require('./events');
 // Others
 const {
     typeDef: othersType,
@@ -40,6 +48,7 @@ let schema = `
             ${parseQuery(memberQuery)}
             ${parseQuery(othersQuery)}
             ${parseQuery(cardQuery)}
+            ${parseQuery(eventQuery)}
         }
 
         type Mutation {
@@ -47,12 +56,14 @@ let schema = `
             ${parseQuery(memberMutation)}
             ${parseQuery(othersMutation)}
             ${parseQuery(cardMutation)}
+            ${parseQuery(eventMutation)}
         }
 `;
 let queryResolver = {}, mutationResolver = {};
 schema += adminType + "\n";
 schema += memberType + "\n";
 schema += cardType + "\n";
+schema += eventType + "\n";
 schema += othersType + "\n";
 logger.info(`Using GraphQL schema: ${schema}`);
 Object.assign(
@@ -60,6 +71,7 @@ Object.assign(
     adminResolver,
     memberResolver,
     cardResolver,
+    eventResolver,
     othersResolver,
 );
 Object.assign(
@@ -67,6 +79,7 @@ Object.assign(
     adminMutationResolver,
     memberMutationResolver,
     cardMutationResolver,
+    eventMutationResolver,
     othersMutationResolver,
 )
 
