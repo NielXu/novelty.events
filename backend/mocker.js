@@ -3,7 +3,7 @@ const reader = require('js-yaml');
 const path = require('path');
 const fs = require('fs');
 const { copyHashPassword } = require('./security');
-const { deleteDev, insert, default_dbname } = require('./database');
+const { deleteDev, insert, default_dbname, get } = require('./database');
 const { logger } = require('./log/logger');
 
 /**
@@ -31,8 +31,35 @@ module.exports = {
             await insert(default_dbname, 'members', read_data('members'));
             logger.info(`[dev] Inserting cards mock data ...`);
             await insert(default_dbname, 'cards', read_data('cards'));
-            // logger.info(`[dev] Inserting events mock data`);
-            // await insert(default_dbname, 'events', read_data('events'));
+            const data = read_data('events')
+            for(var i=0;i<data.length;i++) {
+                const event = data[i];
+                const chiefs = event.chiefs;
+                const memberHelpers = event.memberHelpers? event.memberHelpers : null;
+                const adminHelpers = event.adminHelpers? event.adminHelpers : null;
+                let chiefsData = [], memberHelpersData = [], adminHelpersData = [];
+                for(var j=0;j<chiefs.length;j++) {
+                    const result = await get(default_dbname, 'admins', {username: chiefs[j]});
+                    chiefsData.push(result[0]);
+                }
+                if(event.memberHelpers) {
+                    for(var k=0;k<memberHelpers.length;k++) {
+                        const result = await get(default_dbname, 'members', {username: memberHelpers[k]});
+                        memberHelpersData.push(result[0]);
+                    }
+                    event['memberHelpers'] = memberHelpersData;
+                }
+                if(event.adminHelpers) {
+                    for(var q=0;q<adminHelpers.length;q++) {
+                        const result = await get(default_dbname, 'admins', {username: adminHelpers[q]});
+                        adminHelpersData.push(result[0]);
+                    }
+                    event['adminHelpers'] = adminHelpersData;
+                }
+                event['chiefs'] = chiefsData;
+            }
+            logger.info(`[dev] Inserting events mock data ...`);
+            await insert(default_dbname, 'events', data);
         }
     }
 }
