@@ -1,5 +1,12 @@
 import React from 'react';
-import { small, Badge, Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { small, Badge, Container, Row, Col, Card, Button, Modal, InputGroup } from 'react-bootstrap';
+
+const levelColor = {
+    'adminOnly': 'primary',
+    'memberOnly': 'warning',
+    'adminAndMember': 'info',
+    'unlimited': 'success',
+}
 
 export default class AdminEvents extends React.Component {
     constructor(props) {
@@ -9,7 +16,10 @@ export default class AdminEvents extends React.Component {
             type: this.props.type,
             events: [],
             error: '',
+            showEventDetailModal: false,
+            modalEvent: '',
         }
+        this.onShowDetailClick = this.onShowDetailClick.bind(this);
     }
 
     componentDidMount() {
@@ -104,12 +114,12 @@ export default class AdminEvents extends React.Component {
                                     )}
                                 </Card.Text>
                                 <Card.Text>
-                                    Level: <Badge variant="primary">{e.level}</Badge>
+                                    Level: <Badge variant={levelColor[e.level]}>{e.level}</Badge>
                                 </Card.Text>
                                 <Card.Text>Place: {e.place}</Card.Text>
                                 <Card.Text>Estimated cost: {e.cost}</Card.Text>
                                 <Card.Text>Estimated size: {e.size}</Card.Text>
-                                <Button variant="outline-dark" value={e._id}>Detail</Button>
+                                <Button variant="outline-dark" value={index} onClick={this.onShowDetailClick}>Detail</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -130,12 +140,12 @@ export default class AdminEvents extends React.Component {
                                     )}
                                 </Card.Text>
                                 <Card.Text>
-                                    Level: <Badge variant="primary">{e2.level}</Badge>
+                                    Level: <Badge variant={levelColor[e2.level]}>{e2.level}</Badge>
                                 </Card.Text>
                                 <Card.Text>Place: {e2.place}</Card.Text>
                                 <Card.Text>Estimated cost: {e2.cost}</Card.Text>
                                 <Card.Text>Estimated size: {e2.size}</Card.Text>
-                                <Button variant="outline-dark" value={e2._id}>Detail</Button>
+                                <Button variant="outline-dark" value={index+1} onClick={this.onShowDetailClick}>Detail</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -156,12 +166,12 @@ export default class AdminEvents extends React.Component {
                                     )}
                                 </Card.Text>
                                 <Card.Text>
-                                    Level: <Badge variant="primary">{e3.level}</Badge>
+                                    Level: <Badge variant={levelColor[e3.level]}>{e3.level}</Badge>
                                 </Card.Text>
                                 <Card.Text>Place: {e3.place}</Card.Text>
                                 <Card.Text>Estimated cost: {e3.cost}</Card.Text>
                                 <Card.Text>Estimated size: {e3.size}</Card.Text>
-                                <Button variant="outline-dark" value={e3._id}>Detail</Button>
+                                <Button variant="outline-dark" value={index+2} onClick={this.onShowDetailClick}>Detail</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -171,6 +181,10 @@ export default class AdminEvents extends React.Component {
             index += 3;
         }
         return elements;
+    }
+
+    onShowDetailClick(e) {
+        this.setState({showEventDetailModal: true, modalEvent: this.state.events[e.target.value]});
     }
 
     render() {
@@ -192,6 +206,42 @@ export default class AdminEvents extends React.Component {
                         {this.renderCards()}
                     </Container>
                 </div>
+                <Modal show={this.state.showEventDetailModal} onHide={()=>this.setState({showEventDetailModal: false})}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.state.modalEvent.title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <h5>{this.state.modalEvent.description? this.state.modalEvent.description : "No description"}</h5>
+                        <hr/>
+                        <p>Date: <span>{this.state.modalEvent.date}</span></p>
+                        <p>Time: <span>{this.state.modalEvent.time}</span></p>
+                        <p>
+                            Availability: 
+                            <span>
+                                {this.state.modalEvent.public? (
+                                        <Badge variant="primary">Public</Badge>
+                                    ):(
+                                        <Badge variant="secondary">Private</Badge>
+                                )}
+                            </span>
+                        </p>
+                        <p>
+                            Level: 
+                            <span>
+                                <Badge variant={levelColor[this.state.modalEvent.level]}>{this.state.modalEvent.level}</Badge>
+                            </span>
+                        </p>
+                        <p>Place: <span>{this.state.modalEvent.place}</span></p>
+                        <p>Estimated cost: <span>{this.state.modalEvent.cost !== null? this.state.modalEvent.cost : 'N/A'}</span></p>
+                        <p>Estimated size: <span>{this.state.modalEvent.size? this.state.modalEvent.size : 'N/A'}</span></p>
+                        <p>Collaborate: <span>None</span></p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>this.setState({showEventDetailModal: false})}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         )
     }
