@@ -145,6 +145,15 @@ export default class MemberList extends React.Component {
     }
 
     onAddCardConfirmClick(e) {
+        if(!this.state.number) {
+            toast(`❌Card number cannot be empty`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            this.setState({showAddCardModal: false});
+            return
+        }
         fetch('/graphql', {
             method: 'POST',
             headers: {
