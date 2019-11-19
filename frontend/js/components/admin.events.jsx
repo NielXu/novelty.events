@@ -1,5 +1,6 @@
 import React from 'react';
 import { small, Badge, Container, Row, Col, Card, Button, Modal, InputGroup } from 'react-bootstrap';
+import { formattingDate } from '../tools';
 
 const levelColor = {
     'adminOnly': 'primary',
@@ -104,7 +105,7 @@ export default class AdminEvents extends React.Component {
                             <Card.Header as="h5">{e.title}</Card.Header>
                             <Card.Body>
                                 <Card.Title>{e.description? e.description: 'No description'}</Card.Title>
-                                <Card.Text>{e.date}, {e.time}</Card.Text>
+                                <Card.Text>{formattingDate(e.date)}, {e.time}</Card.Text>
                                 <Card.Text>
                                     Availability:
                                     {e.public? (
@@ -130,7 +131,7 @@ export default class AdminEvents extends React.Component {
                             <Card.Header as="h5">{e2.title}</Card.Header>
                             <Card.Body>
                                 <Card.Title>{e2.description? e2.description: 'No description'}</Card.Title>
-                                <Card.Text>{e2.date}, {e2.time}</Card.Text>
+                                <Card.Text>{formattingDate(e2.date)}, {e2.time}</Card.Text>
                                 <Card.Text>
                                     Availability:
                                     {e2.public? (
@@ -156,7 +157,7 @@ export default class AdminEvents extends React.Component {
                             <Card.Header as="h5">{e3.title}</Card.Header>
                             <Card.Body>
                                 <Card.Title>{e3.description? e3.description: 'No description'}</Card.Title>
-                                <Card.Text>{e3.date}, {e3.time}</Card.Text>
+                                <Card.Text>{formattingDate(e3.date)}, {e3.time}</Card.Text>
                                 <Card.Text>
                                     Availability:
                                     {e3.public? (
@@ -213,7 +214,7 @@ export default class AdminEvents extends React.Component {
                     <Modal.Body>
                         <h5>{this.state.modalEvent.description? this.state.modalEvent.description : "No description"}</h5>
                         <hr/>
-                        <p>Date: <span>{this.state.modalEvent.date}</span></p>
+                        <p>Date: <span>{formattingDate(this.state.modalEvent.date)}</span></p>
                         <p>Time: <span>{this.state.modalEvent.time}</span></p>
                         <p>
                             Availability: 
