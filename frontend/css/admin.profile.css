@@ -1,0 +1,11 @@
+#admin-profile-container {
+    width: 30%;
+    margin: auto;
+    margin-top: 75px;
+    text-align: center;
+}
+
+#admin-profile-lower-buttons {
+    display: flex;
+    justify-content: center;
+}
