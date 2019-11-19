@@ -33,10 +33,13 @@ function hashPassword(pass) {
 }
 
 function copyHashPassword(origin) {
-    let copy = JSON.parse(JSON.stringify(origin));
-    let password = copy.password;
-    copy['password'] = hashPassword(password);
-    return copy;
+    if(origin.password) {
+        let copy = JSON.parse(JSON.stringify(origin));
+        let password = copy.password;
+        copy['password'] = hashPassword(password);
+        return copy;
+    }
+    return origin;
 }
 
 module.exports = {
