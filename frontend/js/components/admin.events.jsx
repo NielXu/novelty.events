@@ -1,6 +1,7 @@
 import React from 'react';
 import { small, Badge, Container, Row, Col, Card, Button, Modal, InputGroup } from 'react-bootstrap';
 import { formattingDate } from '../tools';
+import Select from 'react-select';
 
 const levelColor = {
     'adminOnly': 'primary',
@@ -16,6 +17,8 @@ export default class AdminEvents extends React.Component {
             loading: false,
             type: this.props.type,
             events: [],
+            members: [],
+            admins: [],
             error: '',
             showEventDetailModal: false,
             modalEvent: '',
@@ -81,6 +84,84 @@ export default class AdminEvents extends React.Component {
             const resp = response.data.allEvents;
             if(resp.code === 0) {
                 this.setState({events: resp.data});
+                this.fetchMembers();
+            }
+            else {
+                this.setState({error: resp.message, loading: false});
+            }
+        })
+    }
+
+    fetchMembers() {
+        fetch('/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Auth-Token': localStorage.getItem('X-Auth-Token'),
+            },
+            body: JSON.stringify({
+                query: `
+                {
+                    allMembers {
+                        code,
+                        message,
+                        data {
+                            username,
+                            firstname,
+                            lastname
+                        }
+                    }
+                }
+                `
+            })
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(response => {
+            const resp = response.data.allMembers;
+            if(resp.code === 0) {
+                this.setState({members: resp.data});
+                this.fetchAdmins();
+            }
+            else {
+                this.setState({error: resp.message, loading: false});
+            }
+        })
+    }
+
+    fetchAdmins() {
+        fetch('/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Auth-Token': localStorage.getItem('X-Auth-Token'),
+            },
+            body: JSON.stringify({
+                query: `
+                {
+                    allAdmins {
+                        code,
+                        message,
+                        data {
+                            username,
+                            firstname,
+                            lastname
+                        }
+                    }
+                }
+                `
+            })
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(response => {
+            const resp = response.data.allAdmins;
+            if(resp.code === 0) {
+                this.setState({admins: resp.data});
             }
             else {
                 this.setState({error: resp.message});
@@ -188,6 +269,20 @@ export default class AdminEvents extends React.Component {
         this.setState({showEventDetailModal: true, modalEvent: this.state.events[e.target.value]});
     }
 
+    parseUsersToSelect(users) {
+        if(!users) {
+            return
+        }
+        let result = [];
+        for(var i=0;i<users.length;i++) {
+            result.push({
+                value: users[i].username,
+                label: users[i].username
+            })
+        }
+        return result;
+    }
+
     render() {
         if(this.state.loading) {
             return <h3>Loading...</h3>
@@ -207,7 +302,7 @@ export default class AdminEvents extends React.Component {
                         {this.renderCards()}
                     </Container>
                 </div>
-                <Modal show={this.state.showEventDetailModal} onHide={()=>this.setState({showEventDetailModal: false})}>
+                <Modal show={this.state.showEventDetailModal} onHide={()=>this.setState({showEventDetailModal: false})} scrollable>
                     <Modal.Header closeButton>
                         <Modal.Title>{this.state.modalEvent.title}</Modal.Title>
                     </Modal.Header>
@@ -236,6 +331,39 @@ export default class AdminEvents extends React.Component {
                         <p>Estimated cost: <span>{this.state.modalEvent.cost !== null? this.state.modalEvent.cost : 'N/A'}</span></p>
                         <p>Estimated size: <span>{this.state.modalEvent.size? this.state.modalEvent.size : 'N/A'}</span></p>
                         <p>Collaborate: <span>None</span></p>
+                        <div>
+                            Chiefs:
+                            <span>
+                                <Select
+                                    isMulti
+                                    defaultValue={this.parseUsersToSelect(this.state.modalEvent.chiefs)}
+                                    options={this.parseUsersToSelect(this.state.admins)}
+                                    isDisabled
+                                />
+                            </span>
+                        </div>
+                        <div>
+                            Admin Helpers:
+                            <span>
+                                <Select
+                                    isMulti
+                                    defaultValue={this.parseUsersToSelect(this.state.modalEvent.adminHelpers)}
+                                    options={this.parseUsersToSelect(this.state.admins)}
+                                    isDisabled
+                                />
+                            </span>
+                        </div>
+                        <div>
+                            Member Helpers:
+                            <span>
+                                <Select
+                                    isMulti
+                                    defaultValue={this.parseUsersToSelect(this.state.modalEvent.memberHelpers)}
+                                    options={this.parseUsersToSelect(this.state.members)}
+                                    isDisabled
+                                />
+                            </span>
+                        </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={()=>this.setState({showEventDetailModal: false})}>
