@@ -12,6 +12,7 @@ import {
     FormControl,
     FormCheck } from 'react-bootstrap';
 import { formattingDate } from '../tools';
+import { toast, Slide } from 'react-toastify';
 import Select from 'react-select';
 import '../../css/admin.events.css';
 
@@ -35,8 +36,20 @@ export default class AdminEvents extends React.Component {
             showEventDetailModal: false,
             showNewEventModal: false,
             modalEvent: '',
+            newEventTitle: '',
+            newEventDescription: '',
+            newEventPlace: '',
+            newEventCost: '',
+            newEventAvailability: true,
+            newEventLevel: 'unlimited',
+            newEventCollaborate: '',
+            newEventChiefs: [],
+            newEventAdminHelpers: [],
+            newEventMemberHelpers: [],
+            newEventSize: '',
         }
         this.onShowDetailClick = this.onShowDetailClick.bind(this);
+        this.onConfirmEventClick = this.onConfirmEventClick.bind(this);
     }
 
     componentDidMount() {
@@ -213,7 +226,7 @@ export default class AdminEvents extends React.Component {
                                 </Card.Text>
                                 <Card.Text>Place: {e.place}</Card.Text>
                                 <Card.Text>Estimated cost: {e.cost}</Card.Text>
-                                <Card.Text>Estimated size: {e.size}</Card.Text>
+                                <Card.Text>Estimated size: {e.size? e.size : 'N/A'}</Card.Text>
                                 <Button variant="outline-dark" value={index} onClick={this.onShowDetailClick}>Detail</Button>
                             </Card.Body>
                         </Card>
@@ -239,7 +252,7 @@ export default class AdminEvents extends React.Component {
                                 </Card.Text>
                                 <Card.Text>Place: {e2.place}</Card.Text>
                                 <Card.Text>Estimated cost: {e2.cost}</Card.Text>
-                                <Card.Text>Estimated size: {e2.size}</Card.Text>
+                                <Card.Text>Estimated size: {e2.size? e2.size : 'N/A'}</Card.Text>
                                 <Button variant="outline-dark" value={index+1} onClick={this.onShowDetailClick}>Detail</Button>
                             </Card.Body>
                         </Card>
@@ -265,7 +278,7 @@ export default class AdminEvents extends React.Component {
                                 </Card.Text>
                                 <Card.Text>Place: {e3.place}</Card.Text>
                                 <Card.Text>Estimated cost: {e3.cost}</Card.Text>
-                                <Card.Text>Estimated size: {e3.size}</Card.Text>
+                                <Card.Text>Estimated size: {e3.size? e3.size : 'N/A'}</Card.Text>
                                 <Button variant="outline-dark" value={index+2} onClick={this.onShowDetailClick}>Detail</Button>
                             </Card.Body>
                         </Card>
@@ -294,6 +307,116 @@ export default class AdminEvents extends React.Component {
             })
         }
         return result;
+    }
+
+    parseUsersToData(users) {
+        let result = [];
+        for(var i=0;i<users.length;i++) {
+            result.push("\""+users[i].value+"\"");
+        }
+        return result;
+    }
+
+    onConfirmEventClick() {
+        if(!this.state.newEventTitle) {
+            toast(`❌Event title cannot be empty`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            return;
+        }
+        else if(!this.state.newEventPlace) {
+            toast(`❌Event place cannot be empty`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            return;
+        }
+        else if(this.state.newEventCost === '') {
+            toast(`❌Event cost cannot be empty`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            return;
+        }
+        else if(!this.state.newEventChiefs.length) {
+            toast(`❌Must have at least one event chief`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            return;
+        }
+        else {
+            fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Auth-Token': localStorage.getItem('X-Auth-Token'),
+                },
+                body: JSON.stringify({
+                    query: `
+                    mutation {
+                        addEvent(input: {
+                            date: "20191111"
+                            time: "00:15"
+                            title: "${this.state.newEventTitle}"
+                            level: ${this.state.newEventLevel}
+                            public: ${this.state.newEventAvailability}
+                            chiefs: ${this.parseUsersToData(this.state.newEventChiefs)}
+                            place: "${this.state.newEventPlace}"
+                            cost: ${this.state.newEventCost}
+                            description: ${this.state.newEventDescription? "\""+this.state.newEventDescription+"\"" : null}
+                            adminHelpers: ${this.state.newEventAdminHelpers && this.state.newEventAdminHelpers.length > 0? this.parseUsersToData(this.state.newEventAdminHelpers) : null}
+                            memberHelpers: ${this.state.newEventMemberHelpers && this.state.newEventMemberHelpers.length > 0? this.parseUsersToData(this.state.newEventMemberHelpers) : null}
+                        }) {
+                            code
+                            message
+                        }
+                    }
+                    `
+                })
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(response => {
+                console.log(response);
+                const resp = response.data.addEvent;
+                if(resp.code === 0) {
+                    toast(`✅Successfully added new event`, {
+                        autoClose: 3000,
+                        transition: Slide,
+                        hideProgressBar: true,
+                    });
+                    this.setState({
+                        showNewEventModal: false,
+                        newEventTitle: '',
+                        newEventDescription: '',
+                        newEventPlace: '',
+                        newEventCost: '',
+                        newEventAvailability: true,
+                        newEventLevel: 'unlimited',
+                        newEventCollaborate: '',
+                        newEventChiefs: [],
+                        newEventAdminHelpers: [],
+                        newEventMemberHelpers: [],
+                        newEventSize: '',
+                    });
+                }
+                else {
+                    toast(`❌Error happened when adding new event: ${resp.message}`, {
+                        autoClose: 3000,
+                        transition: Slide,
+                        hideProgressBar: true,
+                    });
+                }
+            })
+        }
     }
 
     render() {
@@ -399,6 +522,8 @@ export default class AdminEvents extends React.Component {
                                 <FormControl
                                     aria-label="Title"
                                     aria-describedby="basic-addon2"
+                                    onChange={e=>this.setState({newEventTitle: e.target.value})}
+                                    value={this.state.newEventTitle}
                                 />
                             </InputGroup>
                         </div>
@@ -409,6 +534,8 @@ export default class AdminEvents extends React.Component {
                                     aria-label="Title"
                                     aria-describedby="basic-addon2"
                                     as="textarea"
+                                    onChange={e=>this.setState({newEventDescription: e.target.value})}
+                                    value={this.state.newEventDescription}
                                 />
                             </InputGroup>
                         </div>
@@ -418,6 +545,8 @@ export default class AdminEvents extends React.Component {
                                 <FormControl
                                     aria-label="Place"
                                     aria-describedby="basic-addon2"
+                                    onChange={e=>this.setState({newEventPlace: e.target.value})}
+                                    value={this.state.newEventPlace}
                                 />
                             </InputGroup>
                         </div>
@@ -427,6 +556,8 @@ export default class AdminEvents extends React.Component {
                                 <FormControl
                                     aria-label="Cost"
                                     aria-describedby="basic-addon2"
+                                    onChange={e=>this.setState({newEventCost: e.target.value})}
+                                    value={this.state.newEventCost}
                                 />
                             </InputGroup>
                         </div>
@@ -435,19 +566,21 @@ export default class AdminEvents extends React.Component {
                             <Select
                                 isMulti
                                 options={this.parseUsersToSelect(this.state.admins)}
+                                onChange={e=>this.setState({newEventChiefs: e})}
+                                value={this.state.newEventChiefs}
                             />
                         </div>
                         <div>
                             <label>Availability</label>
                             <InputGroup className="mb-3">
-                                <FormCheck inline label="Public" checked/>
-                                <FormCheck inline label="Private"/>
+                                <FormCheck inline label="Public" checked={this.state.newEventAvailability} onClick={e=>this.setState({newEventAvailability: true})}/>
+                                <FormCheck inline label="Private" checked={!this.state.newEventAvailability} onClick={e=>this.setState({newEventAvailability: false})}/>
                             </InputGroup>
                         </div>
                         <div>
                             <label>Level</label>
                             <InputGroup className="mb-3">
-                                <FormControl as="select">
+                                <FormControl as="select" value={this.state.newEventLevel} onChange={e=>this.setState({newEventLevel: e.target.value})}>
                                     <option>unlimited</option>
                                     <option>adminOnly</option>
                                     <option>memberOnly</option>
@@ -461,6 +594,8 @@ export default class AdminEvents extends React.Component {
                                 <FormControl
                                     aria-label="Collaborate"
                                     aria-describedby="basic-addon2"
+                                    onChange={e=>this.setState({newEventCollaborate: e.target.value})}
+                                    value={this.state.newEventCollaborate}
                                 />
                             </InputGroup>
                         </div>
@@ -469,6 +604,8 @@ export default class AdminEvents extends React.Component {
                             <Select
                                 isMulti
                                 options={this.parseUsersToSelect(this.state.admins)}
+                                onChange={e=>this.setState({newEventAdminHelpers: e})}
+                                value={this.state.newEventAdminHelpers}
                             />
                         </div>
                         <div className="mb-3">
@@ -476,10 +613,13 @@ export default class AdminEvents extends React.Component {
                             <Select
                                 isMulti
                                 options={this.parseUsersToSelect(this.state.members)}
+                                onChange={e=>this.setState({newEventMemberHelpers: e})}
+                                value={this.state.newEventMemberHelpers}
                             />
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
+                        <Button variant="primary" onClick={this.onConfirmEventClick}>Add</Button>
                         <Button variant="secondary" onClick={()=>this.setState({showNewEventModal: false})}>
                             Close
                         </Button>
