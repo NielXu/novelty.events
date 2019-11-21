@@ -50,9 +50,10 @@ To stop the database container:
 docker stop webapp_database
 ```
 
-Now you can go to the [GraphiQL](http://localhost:4000/graphql) to start testing the API using GraphQL.
+Now you can go to the [GraphiQL](http://localhost:4000/graphql) to start testing the API using GraphQL. Here are some common schemas that you can use for developing.
 
 ```
+# Add a new member
 mutation {
   addMember(input: {
     firstname: "firstname",
@@ -66,11 +67,22 @@ mutation {
     password
   }
 }
-```
 
-To insert an admin for testing
+# Get all members
+{
+  allMembers {
+    code,
+    data {
+      firstname,
+      lastname,
+      username,
+      join,
+      _id
+    }
+  }
+}
 
-```
+# Add a new admin
 mutation {
   addAdmin(input: {
     firstname: "firstname",
@@ -81,6 +93,118 @@ mutation {
   }) {
     username,
     password
+  }
+}
+
+# Get all admins
+{
+  allAdmins {
+    data {
+      firstname,
+      lastname,
+      username,
+      _id,
+      password
+    }
+  }
+}
+
+# Add a new event
+mutation {
+  addEvent(input: {
+    date: "20191115",
+    time: "11:50",
+    title: "Event title",
+    level: unlimited,
+    public: true,
+    chiefs: ["admin"],
+    place: "UTSC",
+    cost: 0,
+  }) {
+    status
+    message
+    code
+    data {
+      date,
+      time,
+      title,
+      adminHelpers {
+        firstname,
+        lastname,
+        username,
+        _id
+      },
+      memberHelpers {
+        firstname,
+        lastname,
+        username,
+        _id
+      }
+      chiefs {
+        firstname
+        lastname
+        username
+        _id
+      }
+    }
+  }
+}
+
+# Get all events
+{
+  allEvents {
+    data {
+      title
+      date
+      time
+      level
+      public
+      place
+      cost
+      description
+      collaborate
+      size
+      chiefs {
+        firstname
+        lastname
+        username
+        _id
+      }
+      adminHelpers {
+        firstname
+        lastname
+        username
+        _id
+      }
+      memberHelpers {
+        firstname
+        lastname
+        username
+        _id
+      }
+    }
+  }
+}
+
+# Add a new member card
+mutation {
+  addCard(input: {
+    number: "x123",
+  }){
+    status,
+    message
+  }
+}
+
+# Get all member cards
+{
+  allCards {
+    data {
+      activate,
+      _id,
+      number,
+      username
+    }
   }
 }
 ```
