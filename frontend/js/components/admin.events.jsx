@@ -1,7 +1,19 @@
 import React from 'react';
-import { small, Badge, Container, Row, Col, Card, Button, Modal, InputGroup } from 'react-bootstrap';
+import {
+    small,
+    Badge,
+    Container,
+    Row,
+    Col,
+    Card,
+    Button,
+    Modal,
+    InputGroup,
+    FormControl,
+    FormCheck } from 'react-bootstrap';
 import { formattingDate } from '../tools';
 import Select from 'react-select';
+import '../../css/admin.events.css';
 
 const levelColor = {
     'adminOnly': 'primary',
@@ -21,6 +33,7 @@ export default class AdminEvents extends React.Component {
             admins: [],
             error: '',
             showEventDetailModal: false,
+            showNewEventModal: false,
             modalEvent: '',
         }
         this.onShowDetailClick = this.onShowDetailClick.bind(this);
@@ -298,6 +311,9 @@ export default class AdminEvents extends React.Component {
         return (
             <div>
                 <div>
+                    <div id="events-upper-buttons">
+                        <Button variant="outline-dark" onClick={()=>this.setState({showNewEventModal: true})}>New Event</Button>
+                    </div>
                     <Container>
                         {this.renderCards()}
                     </Container>
@@ -367,6 +383,104 @@ export default class AdminEvents extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={()=>this.setState({showEventDetailModal: false})}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.showNewEventModal} onHide={()=>this.setState({showNewEventModal: false})} scrollable>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Event</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className="required-field">
+                            <label>Event title</label>
+                            <InputGroup className="mb-3">
+                                <FormControl
+                                    aria-label="Title"
+                                    aria-describedby="basic-addon2"
+                                />
+                            </InputGroup>
+                        </div>
+                        <div>
+                            <label>Description</label>
+                            <InputGroup className="mb-3">
+                                <FormControl
+                                    aria-label="Title"
+                                    aria-describedby="basic-addon2"
+                                    as="textarea"
+                                />
+                            </InputGroup>
+                        </div>
+                        <div className="required-field">
+                            <label>Place</label>
+                            <InputGroup className="mb-3">
+                                <FormControl
+                                    aria-label="Place"
+                                    aria-describedby="basic-addon2"
+                                />
+                            </InputGroup>
+                        </div>
+                        <div className="required-field">
+                            <label>Cost</label>
+                            <InputGroup className="mb-3">
+                                <FormControl
+                                    aria-label="Cost"
+                                    aria-describedby="basic-addon2"
+                                />
+                            </InputGroup>
+                        </div>
+                        <div className="required-field mb-3">
+                            <label>Chiefs</label>
+                            <Select
+                                isMulti
+                                options={this.parseUsersToSelect(this.state.admins)}
+                            />
+                        </div>
+                        <div>
+                            <label>Availability</label>
+                            <InputGroup className="mb-3">
+                                <FormCheck inline label="Public" checked/>
+                                <FormCheck inline label="Private"/>
+                            </InputGroup>
+                        </div>
+                        <div>
+                            <label>Level</label>
+                            <InputGroup className="mb-3">
+                                <FormControl as="select">
+                                    <option>unlimited</option>
+                                    <option>adminOnly</option>
+                                    <option>memberOnly</option>
+                                    <option>adminAndMember</option>
+                                </FormControl>
+                            </InputGroup>
+                        </div>
+                        <div>
+                            <label>Collaborate</label>
+                            <InputGroup className="mb-3">
+                                <FormControl
+                                    aria-label="Collaborate"
+                                    aria-describedby="basic-addon2"
+                                />
+                            </InputGroup>
+                        </div>
+                        <div className="mb-3">
+                            <label>Admin helpers</label>
+                            <Select
+                                isMulti
+                                options={this.parseUsersToSelect(this.state.admins)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label>Member helpers</label>
+                            <Select
+                                isMulti
+                                options={this.parseUsersToSelect(this.state.members)}
+                            />
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>this.setState({showNewEventModal: false})}>
                             Close
                         </Button>
                     </Modal.Footer>

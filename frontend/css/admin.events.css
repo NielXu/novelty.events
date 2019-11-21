@@ -1,0 +1,12 @@
+#events-upper-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.required-field label:after {
+    color: #e32;
+    content: ' *';
+    display:inline;
+}
