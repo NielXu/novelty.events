@@ -19,8 +19,7 @@
   adminHelpers:
     - novelty
   cost: 44.5
-  collaborate:
-    - CSSA
+  collaborate: CSSA
   description: "New year event for Novelty admin only, collaborating with CSSA club"
   size: 200
 

@@ -83,7 +83,7 @@ module.exports = {
             adminHelpers: [Admin]
             memberHelpers: [Member]
             size: Int
-            collaborate: [String]
+            collaborate: String
         }
 
         type EventPayload {
@@ -107,7 +107,7 @@ module.exports = {
             adminHelpers: [String]
             memberHelpers: [String]
             size: Int
-            collaborate: [String]
+            collaborate: String
         }
 
         input EventUpdate {
@@ -123,7 +123,7 @@ module.exports = {
             adminHelpers: [String]
             memberHelpers: [String]
             size: Int
-            collaborate: [String]
+            collaborate: String
         }
     `,
     mutationResolver: {
