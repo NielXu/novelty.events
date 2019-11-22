@@ -312,9 +312,9 @@ export default class AdminEvents extends React.Component {
     parseUsersToData(users) {
         let result = [];
         for(var i=0;i<users.length;i++) {
-            result.push("\""+users[i].value+"\"");
+            result.push(users[i].value);
         }
-        return result;
+        return JSON.stringify(result);
     }
 
     onConfirmEventClick() {
@@ -373,6 +373,7 @@ export default class AdminEvents extends React.Component {
                             description: ${this.state.newEventDescription? "\""+this.state.newEventDescription+"\"" : null}
                             adminHelpers: ${this.state.newEventAdminHelpers && this.state.newEventAdminHelpers.length > 0? this.parseUsersToData(this.state.newEventAdminHelpers) : null}
                             memberHelpers: ${this.state.newEventMemberHelpers && this.state.newEventMemberHelpers.length > 0? this.parseUsersToData(this.state.newEventMemberHelpers) : null}
+                            collaborate: ${this.state.newEventCollaborate? "\""+this.state.newEventCollaborate+"\"" : null}
                         }) {
                             code
                             message
@@ -469,7 +470,7 @@ export default class AdminEvents extends React.Component {
                         <p>Place: <span>{this.state.modalEvent.place}</span></p>
                         <p>Estimated cost: <span>{this.state.modalEvent.cost !== null? this.state.modalEvent.cost : 'N/A'}</span></p>
                         <p>Estimated size: <span>{this.state.modalEvent.size? this.state.modalEvent.size : 'N/A'}</span></p>
-                        <p>Collaborate: <span>None</span></p>
+                        <p>Collaborate: <span>{this.state.modalEvent.collaborate? this.state.modalEvent.collaborate : 'None'}</span></p>
                         <div>
                             Chiefs:
                             <span>
