@@ -50,9 +50,14 @@ export default class AdminEvents extends React.Component {
         }
         this.onShowDetailClick = this.onShowDetailClick.bind(this);
         this.onConfirmEventClick = this.onConfirmEventClick.bind(this);
+        this.fetchMembers = this.fetchMembers.bind(this);
     }
 
     componentDidMount() {
+        this.fetchAllEvents(this.fetchMembers);
+    }
+
+    fetchAllEvents(callback) {
         this.setState({loading: true});
         fetch('/graphql', {
             method: 'POST',
@@ -110,7 +115,12 @@ export default class AdminEvents extends React.Component {
             const resp = response.data.allEvents;
             if(resp.code === 0) {
                 this.setState({events: resp.data});
-                this.fetchMembers();
+                if(callback) {
+                    callback();
+                }
+                else {
+                    this.setState({loading: false});
+                }
             }
             else {
                 this.setState({error: resp.message, loading: false});
@@ -408,6 +418,7 @@ export default class AdminEvents extends React.Component {
                         newEventMemberHelpers: [],
                         newEventSize: '',
                     });
+                    this.fetchAllEvents();
                 }
                 else {
                     toast(`❌Error happened when adding new event: ${resp.message}`, {
@@ -512,7 +523,22 @@ export default class AdminEvents extends React.Component {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show={this.state.showNewEventModal} onHide={()=>this.setState({showNewEventModal: false})} scrollable>
+                <Modal show={this.state.showNewEventModal} onHide={()=>
+                    this.setState({
+                        showNewEventModal: false,
+                        showNewEventModal: false,
+                        newEventTitle: '',
+                        newEventDescription: '',
+                        newEventPlace: '',
+                        newEventCost: '',
+                        newEventAvailability: true,
+                        newEventLevel: 'unlimited',
+                        newEventCollaborate: '',
+                        newEventChiefs: [],
+                        newEventAdminHelpers: [],
+                        newEventMemberHelpers: [],
+                        newEventSize: '',
+                    })} scrollable>
                     <Modal.Header closeButton>
                         <Modal.Title>New Event</Modal.Title>
                     </Modal.Header>
