@@ -15,6 +15,8 @@ import { formattingDate } from '../tools';
 import { toast, Slide } from 'react-toastify';
 import Select from 'react-select';
 import '../../css/admin.events.css';
+import DatePicker from 'react-date-picker';
+import TimePicker from 'react-time-picker';
 
 const levelColor = {
     'adminOnly': 'primary',
@@ -47,6 +49,8 @@ export default class AdminEvents extends React.Component {
             newEventAdminHelpers: [],
             newEventMemberHelpers: [],
             newEventSize: '',
+            newEventDate: new Date(),
+            newEventTime: '12:00',
         }
         this.onShowDetailClick = this.onShowDetailClick.bind(this);
         this.onConfirmEventClick = this.onConfirmEventClick.bind(this);
@@ -336,6 +340,22 @@ export default class AdminEvents extends React.Component {
             });
             return;
         }
+        else if(!this.state.newEventDate) {
+            toast(`❌Event date cannot be empty`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            return;
+        }
+        else if(!this.state.newEventTime) {
+            toast(`❌Event time cannot be empty`, {
+                autoClose: 3000,
+                transition: Slide,
+                hideProgressBar: true,
+            });
+            return;
+        }
         else if(!this.state.newEventPlace) {
             toast(`❌Event place cannot be empty`, {
                 autoClose: 3000,
@@ -372,8 +392,8 @@ export default class AdminEvents extends React.Component {
                     query: `
                     mutation {
                         addEvent(input: {
-                            date: "20191111"
-                            time: "00:15"
+                            date: "${this.state.newEventDate.toISOString().slice(0, 10).replace(/-/g, "")}"
+                            time: "${this.state.newEventTime}"
                             title: "${this.state.newEventTitle}"
                             level: ${this.state.newEventLevel}
                             public: ${this.state.newEventAvailability}
@@ -417,6 +437,8 @@ export default class AdminEvents extends React.Component {
                         newEventAdminHelpers: [],
                         newEventMemberHelpers: [],
                         newEventSize: '',
+                        newEventDate: new Date(),
+                        newEventTime: '12:00',
                     });
                     this.fetchAllEvents();
                 }
@@ -538,6 +560,8 @@ export default class AdminEvents extends React.Component {
                         newEventAdminHelpers: [],
                         newEventMemberHelpers: [],
                         newEventSize: '',
+                        newEventDate: new Date(),
+                        newEventTime: '12:00',
                     })} scrollable>
                     <Modal.Header closeButton>
                         <Modal.Title>New Event</Modal.Title>
@@ -563,6 +587,21 @@ export default class AdminEvents extends React.Component {
                                     as="textarea"
                                     onChange={e=>this.setState({newEventDescription: e.target.value})}
                                     value={this.state.newEventDescription}
+                                />
+                            </InputGroup>
+                        </div>
+                        <div className="mb-3 required-field">
+                            <label>Date</label>
+                            <InputGroup>
+                                <DatePicker value={this.state.newEventDate} onChange={(e)=>this.setState({newEventDate: e})}/>
+                            </InputGroup>
+                        </div>
+                        <div className="mb-3 required-field">
+                            <label>Time</label>
+                            <InputGroup>
+                                <TimePicker
+                                    value={this.state.newEventTime}
+                                    onChange={(e)=>this.setState({newEventTime: e})}
                                 />
                             </InputGroup>
                         </div>
@@ -598,13 +637,13 @@ export default class AdminEvents extends React.Component {
                             />
                         </div>
                         <div>
-                            <label>Availability</label>
+                            <div className="required-field"><label>Availability</label></div>
                             <InputGroup className="mb-3">
                                 <FormCheck inline label="Public" checked={this.state.newEventAvailability} onClick={e=>this.setState({newEventAvailability: true})}/>
                                 <FormCheck inline label="Private" checked={!this.state.newEventAvailability} onClick={e=>this.setState({newEventAvailability: false})}/>
                             </InputGroup>
                         </div>
-                        <div>
+                        <div className="required-field">
                             <label>Level</label>
                             <InputGroup className="mb-3">
                                 <FormControl as="select" value={this.state.newEventLevel} onChange={e=>this.setState({newEventLevel: e.target.value})}>
