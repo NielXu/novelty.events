@@ -73,6 +73,28 @@ async function get(db_name, collec_name, query) {
 }
 
 /**
+ * Get data from database, all the records that match the
+ * query will be returned as a array. Also sort by given condition
+ * and limit by given number of records. It is async function
+ * and will return the result
+ * 
+ * @param {String} db_name Database name
+ * @param {String} collec_name Collection name
+ * @param {Object} query Query
+ * @param {Object} sort Sort by
+ * @param {Number} limit Limit
+ */
+async function getSortLimit(db_name, collec_name, query, sort, limit) {
+    const db = db_instance.db(db_name);
+    try {
+        return await db.collection(collec_name).find(query).sort(sort).limit(limit).toArray();
+    }
+    catch(e) {
+        dblogger.error(`Error occurred when reading from database, query: ${JSON.stringify(query)}, error: ${e}`);
+    }
+}
+
+/**
  * Insert data to the database. One extra field `uid` will
  * be added if uid is set to true, it is an unique identifier generated
  * by uuid4.
@@ -121,6 +143,7 @@ module.exports = {
     init: init,
     default_dbname: default_dbname,
     get: get,
+    getSortLimit: getSortLimit,
     insert: insert,
     del: del,
     update: update,

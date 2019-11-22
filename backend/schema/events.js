@@ -1,5 +1,5 @@
 const { logger } = require('../log/logger');
-const { default_dbname, get, insert, update, del } = require('../database');
+const { default_dbname, get, getSortLimit, insert, update, del } = require('../database');
 const { _, constructPayload } = require('./tools');
 
 function copyInput(input) {
@@ -172,7 +172,14 @@ module.exports = {
             return constructPayload('Success', 0, result);
         },
         getUpcomingEvent: async function(parent, args, context, info) {
-
+            const today = new Date().toISOString().slice(0, 10).replace(/-/g, "")
+            const result = await getSortLimit(default_dbname, 'events', {
+                "date": {$gte: today}
+            }, {
+                "date": 1
+            }, 1);
+            logger.info(`Return result from getUpcomingEvent request: ${JSON.stringify(result)}`);
+            return constructPayload('Success', 0, result);
         },
         getEventByID: async function(parent, args, context, info) {
 
